@@ -1,0 +1,9 @@
+{{- if .IsNamedParams -}}
+<svg height="{{ if .Get "size" }}{{ .Get "size" }}{{ else }}16{{ end }}" width="{{ if .Get "size" }}{{ .Get "size" }}{{ else }}16{{ end }}">
+    <use xlink:href="/images/icons.svg#{{ .Get "name" }}"></use>
+</svg>
+{{- else -}}
+<svg height="16" width="16">
+<use xlink:href="/images/icons.svg#{{ index .Params 0 }}"></use>
+</svg>
+{{- end -}}

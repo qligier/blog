@@ -1,0 +1,22 @@
+{{ define "main" }}
+<div id="home">
+    <h2>Welcome</h2>
+    {{ .Content }}
+
+    <h2>Last 10 posts</h2>
+    <ul class="posts">
+        {{ range first 10 site.RegularPages.ByDate.Reverse }}
+        <li>
+            <time datetime="{{ .Date }}">{{ .Date | time.Format "Mon 02 January 2006" }}</time>
+            <div>
+                <a href="{{ .RelPermalink }}">{{ .LinkTitle }}</a>
+                <p>{{ .Description }}</p>
+            </div>
+        </li>
+        {{ end }}
+    </ul>
+    <p>
+        Older posts are available in the <a href="{{ "posts" | relURL }}">posts section</a>.
+    </p>
+</div>
+{{ end }}

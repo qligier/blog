@@ -1,0 +1,35 @@
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+indent_size = 2
+indent_style = space
+insert_final_newline = true
+max_line_length = 120
+tab_width = 2
+
+[*.html]
+indent_size = 4
+tab_width = 4
+insert_final_newline = false
+
+[*.css]
+indent_size = 4
+tab_width = 4
+
+[*.scss]
+indent_size = 4
+tab_width = 4
+
+[{*.ad,*.adoc,*.asciidoc,.asciidoctorconfig}]
+indent_size = 4
+tab_width = 4
+
+[{*.ant,*.fxml,*.jhm,*.jnlp,*.jrxml,*.rng,*.tld,*.wsdl,*.xml,*.xsd,*.xsl,*.xslt,*.xul}]
+indent_size = 4
+tab_width = 4
+
+[{*.cjs,*.js}]
+indent_size = 4
+tab_width = 4

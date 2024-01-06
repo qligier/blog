@@ -1,0 +1,23 @@
+<div class="container">
+    <div id="top-row">
+        <a href="{{ .Site.BaseURL }}" id="title">
+            <img src="{{ .Site.BaseURL }}images/logo.png" alt="{{ .Site.Title }}">
+        </a>
+
+        {{ partial "menu.html" (dict "menuID" "main" "page" .) }}
+    </div>
+
+    {{ if .IsHome }}
+    <h1>{{ site.Title }}</h1>
+    {{ else if .IsPage }}
+    <h1>{{ .Title }}</h1>
+    {{ $dateMachine := .Date | time.Format "2006-01-02T15:04:05-07:00" }}
+    {{ $dateHuman := .Date | time.Format ":date_long" }}
+    <time datetime="{{ $dateMachine }}">{{ $dateHuman }}</time>
+    <br />
+    <div class="separator"></div>
+    {{ partial "terms.html" (dict "taxonomy" "tags" "page" .) }}
+    {{ else }}
+    <h1>{{ .Title }}</h1>
+    {{ end }}
+</div>

@@ -1,0 +1,30 @@
+{{ define "main" }}
+<div id="body">
+    <h2>{{ .Title }}</h2>
+    {{ .Content }}
+
+    {{ if eq .Title "Tags" }}
+    <ul>
+        {{ range .Pages }}
+        <li>
+            <a href="{{ .RelPermalink }}">{{ .LinkTitle }}</a>
+        </li>
+        {{ end }}
+    </ul>
+    {{ else }}
+    <ul class="posts">
+        {{ range .Pages }}
+        <li>
+            <time datetime="{{ .Date }}">{{ .Date | time.Format "Mon 02 January 2006" }}</time>
+            <div>
+                <a href="{{ .RelPermalink }}">{{ .LinkTitle }}</a>
+                <p>{{ .Description }}</p>
+            </div>
+        </li>
+        <!--{{ .Summary }}-->
+        {{ end }}
+    </ul>
+    {{ end }}
+
+</div>
+{{ end }}

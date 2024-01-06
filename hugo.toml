@@ -1,0 +1,46 @@
+baseURL = 'https://blog.qligier.ch/'
+languageCode = 'en-us'
+title = "Quentin's blog"
+theme = 'qblog'
+copyright = '© 2024 Quentin Ligier'
+
+[params]
+  [params.author]
+    name = 'Quentin Ligier'
+
+[security.exec]
+  allow = ['^asciidoctor$', 'sass']
+
+[outputs]
+  home = ['html', 'rss']
+  section = ['html', 'rss']
+  taxonomy = ['html']
+
+[sitemap]
+  changeFreq = 'weekly'
+  filename = 'sitemap.xml'
+  priority = -1
+
+[privacy]
+  [privacy.disqus]
+    disable = true
+  [privacy.googleAnalytics]
+    disable = true
+  [privacy.instagram]
+    disable = true
+  [privacy.twitter]
+    disable = true
+  [privacy.vimeo]
+    disable = true
+  [privacy.youtube]
+    disable = true
+
+pygmentsUseClasses = true
+pygmentsCodefences = true
+[markup.highlight]
+  codeFences = true
+  lineNoStart = 1
+  lineNos = true
+  lineNumbersInTable = true
+  tabWidth = 4
+  noClasses = false
