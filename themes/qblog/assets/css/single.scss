@@ -1,6 +1,7 @@
 @import "variables";
 
 .post {
+    $line-height: 19.5px;
     code {
         background: #eceff4;
         padding: 2px 4px;
@@ -8,7 +9,8 @@
         color: $dark4;
         font-family: courier, monospace;
     }
-    pre {
+    pre:not(.chroma),
+    div.highlight {
         $negative-margin: 20px;
         border: 1px solid $main-border-color;
         background: #f9fafb;
@@ -22,6 +24,19 @@
             background: none;
             padding: 0;
             border-radius: 0;
+            line-height: $line-height;
+        }
+    }
+    div.highlight {
+        .lnt {
+            color: #b0b7c6;
+            font-family: $font-family-sans-serif;
+            font-size: 13px;
+            display: block;
+            line-height: $line-height;
+        }
+        pre {
+            margin: 0;
         }
     }
 
