@@ -75,7 +75,33 @@ public class TextFile {
 {{< /highlight >}}
 
 <p>
-    That class also contained multiple methods that looked implemented in a suboptimal way. Let's check their
+    To read a file, the class did:
+</p>
+<ol>
+    <li>create a custom <code>File</code> implementation;</li>
+    <li>open a <code>FileInputStream</code> to read the file byte content;</li>
+    <li>create a <code>InputStreamReader</code> to convert bytes to UTF-8 chars;</li>
+    <li>finally, create a <code>StringBuilder</code> to build a string from the read chars.</li>
+</ol>
+
+<p>
+    One issue with that approach is that we are reading the file byte by byte, which is really inefficient because it
+    produces a lot of disk accesses. A better approach would be to read the file in larger chunks, before converting
+    them to UTF-8 strings. Since we want to retrieve the whole file content as a string, we can also read the whole
+    file content in one go.
+</p>
+
+<p>
+    Another issue is that the <code>InputStreamReader</code> is creating a lot of temporary strings, that will have
+    to be merged later by the <code>StringBuilder</code>. Processing a byte at a time also prevents the code to
+    optimize compact strings: if a string is composed of only ISO-8859-1/Latin-1 characters, there is no need to
+    decode it as UTF-8, we can directly use the bytes as chars (thanks to
+    {{< a/ext "https://openjdk.org/jeps/254" "JEP 254: Compact Strings" >}}). That is a fast path that the reader
+    can't take.
+</p>
+
+<p>
+    Other methods in that class look implemented in a suboptimal way. Let's check their
     execution time in the generated profile:
 </p>
 
