@@ -1,0 +1,126 @@
+---
+title: "Implement syntax highlighting of a new language in JetBrains IDEs"
+date: 2024-03-18
+draft: false
+tags: ['Development', 'FHIR', 'IDE']
+description: "The blog post is exploring different ways to implement syntax highlighting for a language in JetBrains IDEs."
+---
+<p>
+    I regularly spend time working on FHIR ImplementationGuides, and I use the
+    {{< a/ext "https://code.visualstudio.com/" "Visual Studio Code" >}} IDE to develop them. It is an IDE I used to
+    work with, but as of lately, my preference goes to the {{< a/ext "https://www.jetbrains.com/" "Jetbrains" >}} IDEs.
+</p>
+
+<p>
+    The FHIR ImplementationGuides are written in a mix of Markdown, HTML, XML, JSON, INI and a specific language called
+    {{< a/ext "https://build.fhir.org/ig/HL7/fhir-shorthand/index.html" "FHIR Shorthand" >}} (FSH). While the former
+    languages are properly supported in many IDEs, the latest is only supported in Visual Studio Code through a
+    {{< a/ext "https://marketplace.visualstudio.com/items?itemName=MITRE-Health.vscode-language-fsh" "dedicated extension" >}}.
+</p>
+
+<p>
+    In this article, I will investigate the possibilities to add syntax highlighting for FHIR Shorthand in the
+    JetBrains IDEs.
+</p>
+
+{{< h2 "Existing resources" >}}
+
+<p>
+    We can investigate how the Visual Studio Code extension implemented the syntax highlighting for FHIR Shorthand. Its
+    sources are available in a
+    {{< a/ext "https://github.com/standardhealth/vscode-language-fsh" "GitHub repository" >}}, and we can quickly find
+    a promising <em>syntaxes</em> folder that contains a single file: <em>fsh.tmLanguage.json</em>. This file contains
+    the language grammar in a {{< a/ext "https://macromates.com/manual/en/language_grammars" "TextMate" >}} definition
+    in JSON format, mostly made of keywords and regular expressions (RegExp). That's a good resource in our quest, but
+    may prove itself limited because not all languages can be properly parsed by RegExps (only Type-3 in the
+    {{< a/ext "https://en.wikipedia.org/wiki/Chomsky_hierarchy" "Chomsky hierarchy" >}}).
+</p>
+
+<p>
+    FSH files are transpiled to FHIR resources by {{< a/ext "https://github.com/FHIR/sushi" "SUSHI" >}}, a Node.js
+    application. The application uses a parser to read the FSH files, which may be useful to us. The sources are also
+    available on GitHub, and after a quick search, we can find two useful files: <em>FSH.g4</em> and
+    <em>FSHLexer.g4</em>. Those are ANTLR4 grammar files, and they contain the grammar to
+    {{< a/ext "https://www.cs.umd.edu/class/spring2017/cmsc430/slides/03-lexing-parsing.pdf" "lex and parse" >}} the
+    FSH language. This is a very powerful tools, but it may be overkill for syntax highlighting only.
+</p>
+
+{{< h2 "Doing it the official way" >}}
+
+<p>
+    JetBrains documentation is quite extensive, and after a quick search, we can find a whole documentation section
+    dedicated to
+    {{< a/ext "https://plugins.jetbrains.com/docs/intellij/custom-language-support.html" "Custom Language Support" >}},
+    including information about syntax highlighting. It indicates that it requires the creation of a plugin, the
+    definition of a lexing grammar with JFlex, and the definition of a parsing grammar in an extended NBF syntax
+    (Grammar-Kit).
+</p>
+
+<p>
+    While JFlex and the Grammar-Kit BNF syntax are not far from the ANTLR4 syntax, it can become quite complex to
+    convert the existing grammar to the JetBrains format because they do not share the same features. I once did such an
+    attempt, and it revealed itself quite inconclusive (
+    {{< a/ext "https://github.com/qligier/jetbrains-plugin-fhir/blob/dev-2023/src/main/java/ch/qligier/jetbrains/plugin/fhir/fsh/lexer/Fsh.flex" "lexer" >}},
+    {{< a/ext "https://github.com/qligier/jetbrains-plugin-fhir/blob/dev-2023/src/main/java/ch/qligier/jetbrains/plugin/fhir/fsh/parser/Fsh.bnf" "parser" >}}).
+</p>
+
+{{< h2 "Doing it with the ANTLR grammar" >}}
+
+<p>
+    The documentation contains a single sentence about using an ANTLR grammar for the parsing, referring to a project
+    led by ANTLR maintainers: the
+    {{< a/ext "https://github.com/antlr/antlr4-intellij-adaptor" "antlr4-intellij-adaptor library" >}}. While the repository
+    is still maintained, there was no new release since 2019, and the documentation is quite scarce. It is not clear if
+    this parser can properly substitute the Grammar-Kit parser, and if it can be used for syntax highlighting.
+</p>
+
+<p>
+    The ANTLR4 grammar would also need to be modified for a proper parser generation, because the lexer currently discards
+    some tokens that are not needed for the parser (the comments and whitespaces), whereas JetBrains IDEs require a continuous
+    token stream. While it should be a minor modification (replacing <code>-> skip</code> by <code>-> channel(HIDDEN)</code>),
+    the advantage to not maintain a separate grammar than the official project is lost.
+</p>
+
+{{< h2 "Doing it with the TextMate grammar" >}}
+
+<p>
+    JetBrains now supports TextMate grammars through the bundled
+    {{< a/ext "https://plugins.jetbrains.com/plugin/7221-textmate-bundles" "TextMate bundles" >}} plugin. It does not
+    require the creation of a plugin, but can be configured in the IDE settings. The immediate issue is that we only
+    have a <code>.tmLanguage</code> file, but a <code>.tmBundle</code> is needed. There are a
+    {{< a/ext "https://stackoverflow.com/questions/29229511/how-do-i-install-the-es6-tmlanguage-into-textmate-2" "few leads" >}}
+    to convert the former to the latter, but nothing too simple.
+</p>
+
+{{< h2 "Doing it with an LSP integration" >}}
+
+<p>
+    The last possibility I found to implement syntax highlighting for a custom language in JetBrains IDEs is to use the
+    {{< a/ext "https://microsoft.github.io/language-server-protocol/" "Language Server Protocol" >}} (LSP) with a
+    application that implements the protocol for the custom language. I'm not aware of any existing LSP server for FSH,
+    but the current SUSHI application could be a good candidate for developing such a server. The LSP offers a lot of
+    features, but only a
+    {{< a/ext "https://plugins.jetbrains.com/docs/intellij/language-server-protocol.html" "small subset is currently supported" >}}.
+    It is nonetheless the most future-proof and helpful solution, as the LSP standard is widely adopted and in active
+    development. Other IDEs (including Visual Studio Code) would profit from the LSP server, implementing the FSH logic
+    once and providing its results to all the IDEs.
+</p>
+
+{{< h2 "Personal decision" >}}
+
+<p>
+    While I might try to implement the TextMate grammar in the JetBrains IDEs without creating a plugin to profit faster
+    from syntax highlighting, I will also investigate the ANTLR4-based parser. A proper parser would allow implementing
+    a lot of other features, such as code completion, code navigation, and refactoring thanks to the impressive APIs
+    accessible to the plugin developers.
+</p>
+
+<p>
+    The LSP solution is also very appealing, but it requires a lot of work and most probably a lot of coordination with
+    the SUSHI developers. It is a long-term solution, and I will keep it in mind for the future.
+</p>
+
+<p>
+    You can check the progress of the implementation in the
+    {{< a/ext "https://github.com/qligier/jetbrains-plugin-fhir" "GitHub repository" >}}.
+</p>
