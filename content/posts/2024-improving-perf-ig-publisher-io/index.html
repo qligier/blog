@@ -42,7 +42,7 @@ implementation guides."
     content of files, an operation that should usually be fast. The code looked like:
 </p>
 
-{{< highlight java >}}
+{{< code java "org/hl7/fhir/utilities/TextFile.java" "hl_lines=3 7 16-17"  >}}
 public class TextFile {
     public static String fileToString(String src) throws FileNotFoundException, IOException  {
         CSFile f = new CSFile(src);
@@ -72,7 +72,7 @@ public class TextFile {
 
     // [...]
 }
-{{< /highlight >}}
+{{< /code >}}
 
 <p>
     To read a file, the class did:

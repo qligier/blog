@@ -1,6 +1,6 @@
 @import "variables";
 
-header {
+body > header {
     background: $blue-primary;
     color: $white-primary;
     height: $header-height;

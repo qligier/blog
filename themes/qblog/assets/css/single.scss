@@ -9,9 +9,69 @@
         color: $dark4;
         font-family: courier, monospace;
     }
+
+    .qcode {
+        $negative-margin: 20px;
+        border: 1px solid $main-border-color;
+        background: #f9fafb;
+        margin: 10px #{-$negative-margin};
+        padding: 0;
+        border-radius: 5px;
+        font-size: 13px;
+        overflow-x: auto;
+
+        header {
+            border-bottom: 1px solid $main-border-color;
+            padding: 10px 20px;
+            background: #f1f3f6;
+            font-size: 1.1em;
+
+            img {
+                height: 2em;
+                vertical-align: middle;
+                display: inline-block;
+                margin-right: 20px;
+            }
+        }
+        code {
+            background: none;
+            padding: 0;
+            border-radius: 0;
+            line-height: $line-height;
+        }
+        table {
+            width: 100%;
+            margin: 10px 0;
+        }
+        .lnt {
+            color: #b0b7c6;
+            font-family: $font-family-sans-serif;
+            font-size: 13px;
+            display: block;
+            line-height: $line-height;
+        }
+        pre {
+            margin: 0;
+        }
+        .lnt {
+            border-left: 2px solid #f9fafb;
+        }
+        .hl > .lnt {
+            border-left: 2px solid #5596e6;
+        }
+        .hl > .lnt,
+        .line.hl {
+            background: #dde9f6;
+        }
+        .chroma .lnt {
+            margin-right: 0;
+        }
+    }
+
     pre:not(.chroma),
     div.highlight {
         $negative-margin: 20px;
+        /*
         border: 1px solid $main-border-color;
         background: #f9fafb;
         margin: 10px #{-$negative-margin};
@@ -25,19 +85,7 @@
             padding: 0;
             border-radius: 0;
             line-height: $line-height;
-        }
-    }
-    div.highlight {
-        .lnt {
-            color: #b0b7c6;
-            font-family: $font-family-sans-serif;
-            font-size: 13px;
-            display: block;
-            line-height: $line-height;
-        }
-        pre {
-            margin: 0;
-        }
+        }*/
     }
 
     figure {

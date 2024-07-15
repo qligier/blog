@@ -1,0 +1,15 @@
+{{ $lang := .Get 0 }}
+{{ $title := .Get 1 }}
+{{ $opts := .Get 2 }}
+{{ $source := .Inner }}
+{{ $trimmed_source := $source | replaceRE `^([ \t]*\r*\n)` "" }}
+
+
+<div class="qcode">
+    <header>
+
+        <img src="/images/lang/{{ $lang }}.svg" alt="{{ $lang }}"/>
+        {{- $title }}
+    </header>
+    {{ transform.Highlight $trimmed_source $lang $opts }}
+</div>
