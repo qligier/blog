@@ -1,0 +1,243 @@
+---
+title: "Beginners guide to Apache Camel, IPF and Husky for the Swiss EPR"
+date: 2024-07-14
+draft: true
+tags: ['Development', 'IPF', 'Camel', 'Java', 'Swiss EPR']
+description: "The blog post is ."
+---
+
+{{< h2 "Introduction" >}}
+
+<p>
+    In this article, I will focus on using these libraries with the Spring Boot integration.
+    While it is not mandatory to use Spring Boot, it is a good choice, as a lot of features implemented in IPF are
+    requiring it.
+
+</p>
+
+{{< h2 "Camel concepts" >}}
+
+<p>
+    Apache Camel is a powerful open-source integration framework based on known Enterprise Integration Patterns (EIP).
+    It allows you to define routing and mediation rules in a variety of domain-specific languages, including a Java-based
+    Fluent API, Spring or Blueprint XML Configuration files, and a Scala DSL.
+</p>
+
+<p>
+    The Camel context contains a bean registry, a component that Spring also provides.
+    When both Camel and Spring are used together, the Camel context will automatically delegate its bean registry to
+    Spring.
+    This is quite helpful, as you can simply define your beans in the Spring context and Camel will be able to use them.
+</p>
+
+{{< h2 "Sending a message with Camel" >}}
+
+<p>
+    The first step to send a message with Camel is to instantiate the client that will send the message.
+    The client is an instance of the <code>ProducerTemplate</code> class, which is instantiated from the Camel context.
+    The Camel context is automatically instantiated by ???? and you can autowire it with Spring Boot.
+</p>
+
+{{< code java "Camel client instantiation" "hl_lines=8 15-17"  >}}
+@Config
+public class AppConfig {
+
+    @Bean
+    public ProducerTemplate createProducerTemplate(final CamelContext camelContext) {
+        return camelContext.createProducerTemplate();
+    }
+}
+{{< /code >}}
+
+<p>
+    A <code>ProducerTemplate</code> can be resource-intensive, because it creates a new thread pool for each instance
+    and keeps a cache of initialized transactions (i.e. when you send a message for the first time, Camel initializes
+    the component needed by the transaction type, which can take a few seconds).
+    {{< a/ext "https://camel.apache.org/manual/faq/why-does-camel-use-too-many-threads-with-producertemplate.html" "Camel recommends" >}}
+    to create it once and reuse it; you are not meant to create a new instance for each message you want to send.
+</p>
+
+<p>
+    Once you have the <code>ProducerTemplate</code>, you can use it to send a message to a Camel endpoint.
+    The endpoint is a URI that defines the destination of the message, the protocol to use, and the options to apply.
+    An example of endpoint to send a PIXv3 Query message to a PIX Manager is:
+    <code>pixv3-iti45://test.ahdis.ch/eprik-cara/camel/cara/UPIProxy/services/PIXPDQV3ManagerService?secure=true&audit=true&sslContextParameters=#pixContext&inFaultInterceptors=#serverInLogger</code>
+    It is made of:
+</p>
+<ul>
+    <li>
+        <code>pixv3-iti45</code>: the protocol to use, in this case, a PIXv3 Query message. This one is defined by IPF,
+        we will see later how to find implemented protocols.
+    </li>
+    <li>
+        <code>test.ahdis.ch/eprik-cara/camel/cara/UPIProxy/services/PIXPDQV3ManagerService</code>: the host and path to
+        send the message to.
+    </li>
+    <li>
+        <code>secure=true&audit=true&sslContextParameters=#pixContext&inFaultInterceptors=#serverInLogger</code>: some
+        configuration values applied to this transaction only, defined as query string parameters in the URI.
+        Those are a mix of Camel and IPF options, we will see later how to discover existing options, and the most
+        common ones.
+    </li>
+</ul>
+
+{{< h3 "mTLS configuration" >}}
+
+<p>
+    The Swiss EPR environment requires the use of {{< abbr mTLS >}} for all transactions.
+    To configure {{< abbr mTLS >}} in Camel, you need to set the two following options in the endpoint URI:
+</p>
+
+<ul>
+    <li>
+        <code>secure</code>: a boolean value to enable or disable the use of TLS for the HTTP connection.
+        Since {{< abbr mTLS >}} is mandatory in the Swiss EPR, this option should always be set to <code>true</code>.
+    </li>
+    <li>
+        <code>sslContextParameters</code>: a reference to a bean that defines the TLS context to use for the connection.
+        It is used to define the truststore and keystore to use, and optionally other parameters.
+    </li>
+</ul>
+
+<p>
+    While the first setting is a simple boolean value, the second one is a reference to a bean.
+    You need to define a named bean in your application for your instance of <code>SSLContextParameters</code>.
+    That bean will contain a keystore, which contains the private key of your client certificate to authenticate to the
+    server, and a truststore, which contains the public key of the server certificate that you can use to authenticate
+    the server (ensuring you are connected to a legitimate host).
+</p>
+
+{{< code java "SSLContextParameters bean definition" "hl_lines=4" >}}
+@Config
+public class AppConfig {
+
+    @Bean("eprTlsContext")
+    public SSLContextParameters createSSLContextParameters() {
+        // The keystore contains the private key of your client certificate
+        final var keyStoreParameters = new KeyStoreParameters();
+        keyStoreParameters.setResource("file:/path/to/your/keystore.jks");
+        keyStoreParameters.setPassword("your-keystore-password");
+
+        // The truststore contains the public key of the server certificate
+        final var trustStoreParameters = new KeyStoreParameters();
+        trustStoreParameters.setResource("file:/path/to/your/truststore.jks");
+        trustStoreParameters.setPassword("your-truststore-password");
+
+        final var sslContextParameters = new SSLContextParameters();
+        sslContextParameters.setKeyManagers(new KeyManagersParameters());
+        sslContextParameters.setTrustManagers(new TrustManagersParameters());
+        sslContextParameters.setSecureSocketProtocol("TLSv1.2");
+        sslContextParameters.setKeyStore(keyStoreParameters);
+        sslContextParameters.setTrustStore(trustStoreParameters);
+
+        return sslContextParameters;
+    }
+}
+{{< /code >}}
+
+<p>
+    With this example, you can now send a message with the configured {{< abbr mTLS >}} context by referencing it in
+    the endpoint URI:
+    <code>pixv3-iti45://www.example.com?secure=true&<strong>sslContextParameters=#eprTlsContext</strong></code>.
+    For more information, you can refer to the
+    {{< a/ext "https://oehf.github.io/ipf-docs/docs/ihe/wsSecureTransport#producer" "'Web Service Security' IPF documentation" >}}.
+</p>
+
+{{< h3 "ATNA audit configuration" >}}
+
+<p>
+    Another requirement of the Swiss EPR is to audit all transactions, meaning to send a DICOM Audit Message to the
+    community, detailing the transaction.
+    IPF provides a component to automatically audit all transactions, with all information required by the Swiss EPR.
+    Two options are used to enable the audit of a transaction:
+    The
+</p>
+
+<ul>
+    <li>
+        <code>audit</code>: a boolean value to enable or disable the audit of that transaction.
+    </li>
+    <li>
+        <code>auditContext</code>: a reference to a bean that defines the audit configuration to use for the transaction.
+        You will need to define your <code>AuditEnterpriseSiteID</code>, and the {@< abbr mTLS >}} configuration.
+    </li>
+</ul>
+
+{{< code java "AuditContext bean definition" "hl_lines=4" >}}
+@Config
+public class AppConfig {
+
+    @Bean("eprAuditContext")
+    public AuditContext auditContext() throws Exception {
+        final var auditContext = new DefaultAuditContext();
+
+        auditContext.setTlsParameters(new TlsParameterTest(this.createSSLContextParameters()));
+        auditContext.setAuditTransmissionProtocol(new TCPSyslogSender());
+        context.setAuditEnterpriseSiteId("1.2.3");
+        context.setSendingApplication("MyApplication");
+
+        return auditContext;
+    }
+}
+{{< /code >}}
+
+<p>
+    You can refer to the {{< a/ext "https://oehf.github.io/ipf-docs/docs/ihe/atna/" "'ATNA Auditing' IPF documentation" >}}
+    for more details.
+
+</p>
+
+TODO: Add details about XUA processing.
+
+{{< h3 "Other options" >}}
+
+<p>
+    Other options can be set in the endpoint URI to configure the transaction. Some of the most common ones are:
+</p>
+
+<ul>
+    <li>
+        <code>inInterceptors</code>, <code>inFaultInterceptors</code>, <code>outInterceptors</code>, <code>outFaultInterceptors</code>:
+        these options allow you to use
+        {{< a/ext "https://oehf.github.io/ipf-docs/docs/ihe/wsCustomInterceptors" "CXF interceptors" >}}
+        to process incoming or outgoing SOAP messages or faults.
+    </li>
+    <li>
+        <code>features</code>: that option allows you to load
+        {{< a/ext "https://oehf.github.io/ipf-docs/docs/ihe/wsCustomFeatures" "CXF features" >}}
+        to the transaction.
+    </li>
+</ul>
+
+{{< h2 "The different transactions" >}}
+
+<p>
+    Now that we know how to build the endpoint URI, assuming you know the particular hosts and paths to use in your EPR
+    community, and that we know how to configure the {{< abbr mTLS >}} and audit context, we need to know which protocol
+    to set in the URI for each transaction.
+    That information can be found in the IPF documentation: in the
+    .
+</p>
+<ul>
+    <li>
+        {{< a/ext "https://oehf.github.io/ipf-docs/docs/ihe/xds/" "XDS based transactions" >}}, for document-related
+        transactions: searching (ITI-18), retrieving (ITI-43) and publishing (ITI-41).
+    </li>
+    <li>
+        {{< a/ext "https://oehf.github.io/ipf-docs/docs/ihe/hl7v3/" "HL7v3 based transactions" >}}, for patient-related
+        transactions: querying identifier (ITI-45), querying demographics (ITI-47) and publishing identifiers (ITI-44).
+    </li>
+    <li>
+        {{< a/ext "https://oehf.github.io/ipf-docs/docs/ihe/hpd/" "HPD based transactions" >}}, for practitioner-related
+        transactions: searching (ITI-58) and updating (ITI-59).
+    </li>
+</ul>
+
+
+{{< h2 "Building the requests" >}}
+
+
+
+{{< h3 "Insert the XUA assertion" >}}
+
+For some transactions, you will need to insert the XUA assertion in the message.

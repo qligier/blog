@@ -1,0 +1,111 @@
+---
+title: "An overview of Code Completion in Intellij IDEA"
+date: 2024-01-01
+draft: true
+tags: ['Software', 'IDE', 'Development']
+description: "."
+---
+
+<p>
+    My every day IDEs of choice are JetBrains'.
+    I would like to share some of the tips and tricks I use to make my life easier.
+    In this blog post, I will focus here on Intellij IDEA because that is the IDE I currently use the most, but many
+    of those features equally apply to other JetBrains' IDEs.
+
+    Although it is quite resource-intensive, its many features make it worth it.
+</p>
+
+{{< h2 "Code Completion" >}}
+
+<p>
+    Code completion is an important features of any IDE, and can be used to speed up development.
+    Intellij IDEA has a lot of features to make code completion even more powerful.
+</p>
+
+
+{{< h3 "Basic completion" >}}
+
+{{< h2 "Live Templates" >}}
+
+https://www.jetbrains.com/help/idea/using-live-templates.html
+
+<p>
+    Live templates are a great way to speed up development.
+
+    Live templates are available in different scopes:
+</p>
+
+<ul>
+    <li><strong>Simple</strong>: </li>
+    <li><strong>Parameterized</strong>: </li>
+    <li><strong>Surround</strong>: </li>
+</ul>
+
+{{< h2 "Postfix Completion" >}}
+
+https://www.jetbrains.com/help/idea/auto-completing-code.html#postfix_completion
+
+{{< h2 "Structural Search and Replace" >}}
+
+{{< h2 "Getter, Setter, HashCode, Equals and ToString Generation" >}}
+
+<p>
+    Writing getters and setters can be a tedious task, and the success of Project Lombok probably comes from its ability
+    to generate them automatically.
+    Intellij IDEA also has a built-in feature to generate getters and setters for the fields you select.
+    It can avoid you having to add the Lombok dependency to your project (with its custom pre-processor), but you will
+    need to generate them again if you change, remove the existing fields, or add new ones.
+</p>
+
+<p>
+    To generate getters and setters, you can use the <kbd>Alt</kbd> + <kbd>Insert</kbd> shortcut, or right-click on the
+    class and select <code>Generate...</code>.
+</p>
+
+TODO screenshot
+
+<p>
+    The final generation feature is the <code>toString()</code> method.
+    It is very useful to have a readable representation of your objects, especially when debugging.
+    Intellij IDEA can generate a <code>toString()</code> method for you, based on the fields you select.
+    Lombok
+</p>
+
+Again, you can use the <kbd>Alt</kbd> +
+<kbd>Insert</kbd> shortcut, or right-click on the class and select <code>Generate...</code>.
+
+{{< h2 "Comparison with Project Lombok" >}}
+
+<em>{{< a/ext "https://projectlombok.org" "Project Lombok" >}}</em> (or simply <em>Lombok</em>) is a very popular library that provides generation abilities
+similar to the ones described above (getters, setters, toString, equals, hashCode).
+It is very useful to avoid writing boilerplate code, but it
+
+<p>
+    Its main advantage is that it generates code at compile time, meaning that the generated code will always be
+    up-to-date with the fields of your class.
+</p>
+
+<p>
+    The inconvenience is that:
+</p>
+
+<ul>
+    <li>it requires a dependency to be added to your project;</li>
+    <li>Lombok uses a custom annotation processor, which can be a problem if you use other processors (e.g. MapStruct)
+        or when you manually configure the compiler (e.g. with [maven-compiler-plugin]);
+    </li>
+    <li>it can be difficult to debug the generated code, since you never see it. Note that debugging the
+        Lombok-generated code is not a common task;
+    </li>
+    <li>the generator has limited customization options: while you can configure some aspects of the generated code,
+        having direct access to the generated code would allow you to customize it completely.
+    </li>
+</ul>
+
+<p>
+    Which one is best for you depends on your use case, constraints and preferences.
+    I generally use Lombok in the development phase of a project, which saves me a lot of time writing that kind of
+    boilerplate code.
+    Then, when the project becomes more stable, I remove Lombok and replace it with the Intellij IDEA-generated code.
+    This
+</p>

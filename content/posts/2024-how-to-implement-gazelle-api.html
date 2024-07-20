@@ -1,0 +1,176 @@
+---
+title: "How we implemented the Gazelle EVS Client's new validation API in Matchbox"
+date: 2024-07-14
+draft: true
+tags: ['Development', 'Java', 'Matchbox', 'Interoperability']
+description: "The blog post describes how we implemented the EVS Client's new validation API in Matchbox."
+---
+
+<p></p>
+
+{{< h2 "About Gazelle and the EVS Client" >}}
+
+<p>
+    IHE Gazelle is an ecosystem of integrated tools designed to support interoperability testing and conformance
+    assessment for health information technology systems.
+</p>
+<p>
+    The EVS Client is one of the technical components of Gazelle; its name is the acronym of <em>External Validation
+    Service</em>. It is used to verify the conformance of messages and documents exchanged .
+</p>
+
+<p>
+    The EVS Client is one of the main components used during IHE Europe Connectathons,
+</p>
+
+{{< h2 "About Matchbox" >}}
+
+<p>
+    Matchbox is an open-source FHIR server based on the HAPI FHIR JPA Server Starter.
+    It offers several key features and functionalities:
+</p>
+
+<ol>
+    <li>
+        Implementation Guide Support: Matchbox can pre-load FHIR implementation guides from package servers for
+        conformance resources such as StructureMap, Questionnaire, CodeSystem, ValueSet, ConceptMap, NamingSystem,
+        and StructureDefinition.
+    </li>
+    <li>
+        Validation: It provides validation support through the [server]/$validate endpoint, allowing users to check
+        FHIR resources for conformance with loaded implementation guides.
+    </li>
+    <li>
+        FHIR Mapping Language: Matchbox includes endpoints for creating StructureMaps and supports the StructureMap/$transform operation.
+    </li>
+    <li>
+        Structured Data Capture (SDC): It offers SDC extraction support based on the FHIR Mapping language and Questionnaire/$extract.
+    </li>
+    <li>
+
+    </li>
+    <li>
+
+    </li>
+    <li>
+
+    </li>
+    <li>
+
+    </li>
+</ol>
+
+<p>
+    Matchbox is designed to be a versatile FHIR server solution, catering to various deployment scenarios and offering
+    robust support for FHIR implementation guides and related operations.
+</p>
+
+
+{{< h2 "Investigating the new API" >}}
+
+<p>
+    Kereval is developing a new {{< abbr API >}} to allow interfacing other specialized validators in the EVS Client GUI.
+    The documentation is still scarce, but the first version of the API is already available in the EVS Client.
+    Some of its components are available in open-source repositories:
+</p>
+<ul>
+    <li>
+        {{< a/ext "https://gitlab.inria.fr/gazelle/library/validation-service-api" "Gazelle/Library/validation service api" >}}:
+        a library that provides all required APIs to build and integrate a new validation service with Gazelle Test Bed.
+    </li>
+    <li>
+        {{< a/ext "https://gitlab.inria.fr/gazelle/public/validation/http-validator" "Gazelle/Public/Validation/HTTP Validator" >}}:
+        an HTTP validation engine that implements the new validation service API.
+    </li>
+</ul>
+
+<p>
+    In the validation service {{< abbr API >}} repository, the webservice definition can quickly be found in the
+    {{< a/ext "https://gitlab.inria.fr/gazelle/library/validation-service-api/-/blob/master/validation-jaxrs-api/src/main/java/net/ihe/gazelle/validation/interlay/ws/ValidationApiWS.java" "ValidationApiWS" >}}
+    class.
+    It provides useful information about the {{< abbr API >}} design and that particular implementation.
+    We can see two endpoints in it, <code>POST /validate</code> and <code>GET /profiles</code>, along with the models
+    for the requests and responses, and some OpenAPI annotations.
+    The webservice is defined with Jakarta RESTful Web Services (JAX-RS), in the new <code>jakarta</code> namespace.
+</p>
+
+{{< code java "Structure of ValidationApiWS.java" "hl_lines=10 16" >}}
+package net.ihe.gazelle.validation.interlay.ws;
+import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.Response;
+
+public interface ValidationApiWS {
+    @POST
+    @Path("/validate")
+    @Produces({"application/json", "application/gzl.validation.report+json"})
+    // @Schema(implementation = ValidationReportDTO.class)
+    Response createValidationRequest(ValidationRequest validationRequest);
+
+    @GET
+    @Path("/profiles")
+    @Produces({"application/json"})
+    // @Schema(type = SchemaType.ARRAY, implementation = ValidationProfileDTO.class)
+    Response getValidationProfiles();
+}
+{{< /code >}}
+
+<p>
+    While this implementation seems to provide everything to start developing our interface, I would prefer not to
+    depend on these dependencies, since Matchbox is already dependent on HAPI FHIR and Spring Boot.
+    These two dependencies are responsible for managing the servlet container(s), and they don't implement the {{< abbr JAX-RS >}}
+    specification; Spring MVC provides its own way to define RESTful services.
+    Adding another dependency to manage the {{< abbr JAX-RS >}} specification would be redundant and could lead to conflicts; luckily,
+    the Spring MVC annotations are very similar to the {{< abbr JAX-RS >}} annotations, and we can easily map the formers to the latters.
+</p>
+
+{{< code java "Equivalent implementation with Spring MVC" >}}
+package ch.ahdis.matchbox.gazelle;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+public class GazelleValidationWs {
+
+    @PostMapping(path = "/validate", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ValidationReport postValidate(@RequestBody final ValidationRequest validationRequest) {
+        // Perform validation
+    }
+
+    @GetMapping(path = "/profiles", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List< ValidationProfile> getProfiles() {
+        // List profiles
+    }
+}
+{{< /code >}}
+
+<p>
+    That was a simple job, but we still need to implement the models for the requests and responses.
+    The validation service implement the Data Transfer Objects (DTOs) with really Java-esque Design Patterns: there
+    are interfaces, factories, builders, validators, visitors, mappers between DTOs and Domain Objects, and so on.
+    We don't really need all that complexity to simply serialize and deserialize the requests and responses from/to
+    their JSON representation.
+    There 13 classes in total, quickly built with Lombok annotations (immediately followed by Delombok to allow changing
+    the source code in some places) and 3 enums.
+    Some methods
+</p>
+
+<p>
+    And voilà!
+    We are pretty much done with the implementation of the new API.
+    Now, we need to process the requests and generates valid responses.
+</p>
+
+{{< h2 "XXX" >}}
+
+
+
+https://gitlab.inria.fr/gazelle/library/validation-service-api
+https://gitlab.inria.fr/gazelle/library/validation-service-api/-/blob/master/validation-api/src/main/java/net/ihe/gazelle/validation/api/domain/request/structure/ValidationRequest.java?ref_type=heads
+https://app.swaggerhub.com/apis/gazelletestbed/gazelle-evs_client_api/3.0#/Validation/createValidation
+https://gitlab.inria.fr/gazelle/library/validation-service-api/-/blob/master/validation-api/src/main/java/net/ihe/gazelle/validation/api/domain/request/structure/ValidationItem.java?ref_type=heads
+https://gitlab.inria.fr/gazelle/applications/test-execution/validator/http-validator
+
+Only /validate and /profiles
+https://gitlab.inria.fr/gazelle/library/validation-service-api/-/blob/master/validation-jaxrs-api/src/main/java/net/ihe/gazelle/validation/interlay/ws/ValidationApiWS.java
+
+Metadata builder has the validation profiles:
+https://gitlab.inria.fr/gazelle/public/validation/http-validator/-/blob/master/http-validator-service/src/main/java/net/ihe/gazelle/httpvalidator/interlay/service/ValidationMetadataService.java?ref_type=heads
