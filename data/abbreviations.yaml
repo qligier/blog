@@ -4,3 +4,11 @@
   abbreviation: MiB
 - term: Gibibyte
   abbreviation: GiB
+- term: Data Transfer Object
+  abbreviation: DTO
+- term: Application Programming Interface
+  abbreviation: API
+- term: Jakarta RESTful Web Services
+  abbreviation: JAX-RS
+- term: Mutual TLS authentication
+  abbreviation: mTLS
