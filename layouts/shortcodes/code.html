@@ -1,15 +1,13 @@
+<!-- A syntax highlighting shortcode for code snippets. -->
+<!-- Original: https://github.com/gohugoio/hugo/blob/master/tpl/tplimpl/embedded/templates/shortcodes/highlight.html -->
 {{ $lang := .Get 0 }}
 {{ $title := .Get 1 }}
 {{ $opts := .Get 2 }}
-{{ $source := .Inner }}
-{{ $trimmed_source := $source | replaceRE `^([ \t]*\r*\n)` "" }}
-
-
+{{ $source := trim .InnerDeindent "\n\r" }}
 <div class="qcode">
     <header>
-
         <img src="/images/lang/{{ $lang }}.svg" alt="{{ $lang }}"/>
         {{- $title }}
     </header>
-    {{ transform.Highlight $trimmed_source $lang $opts }}
+    {{ transform.Highlight $source $lang $opts }}
 </div>
