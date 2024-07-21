@@ -8,9 +8,6 @@ copyright = '© 2024 Quentin Ligier'
   [params.author]
     name = 'Quentin Ligier'
 
-[security.exec]
-  allow = ['^asciidoctor$', 'sass']
-
 [outputs]
   home = ['html', 'rss']
   section = ['html', 'rss']

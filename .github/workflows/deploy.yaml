@@ -40,13 +40,6 @@ jobs:
           hugo-version: 'latest'
           extended: true
 
-      - name: Setup Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: 3.3
-
-      - run: gem install asciidoctor
-
       - uses: actions/cache@v4
         with:
           path: /home/runner/.cache/hugo_cache
