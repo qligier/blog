@@ -1,0 +1,11 @@
+{{ $lang := .Type }}
+{{ $title := index .Attributes "title" }}
+<div class="qcode">
+    {{- with $title -}}
+    <header>
+        <img src="/images/lang/{{ $lang }}.svg" alt="{{ $lang }}"/>
+        {{- $title }}
+    </header>
+    {{- end }}
+    {{ transform.Highlight .Inner $lang .Options }}
+</div>
