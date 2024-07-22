@@ -1,0 +1,5 @@
+<!-- A syntax highlighting shortcode for inline code snippets. -->
+<!-- Original: https://github.com/gohugoio/hugo/blob/master/tpl/tplimpl/embedded/templates/shortcodes/highlight.html -->
+{{ $lang := .Get 0 }}
+{{ $source := .InnerDeindent }}
+<span class="chroma">{{ transform.Highlight $source $lang "hl_inline=true,linenos=false" }}</span>
