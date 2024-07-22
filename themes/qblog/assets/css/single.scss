@@ -122,11 +122,19 @@
     }
 
     p + h2,
+    ul + h2,
+    ol + h2,
+    figure + h2,
+    pre + h2,
     div + h2 {
         margin-top: 2em;
     }
 
     p + h3,
+    ul + h3,
+    ol + h3,
+    figure + h3,
+    pre + h3,
     div + h3 {
         margin-top: 1.2em;
     }
