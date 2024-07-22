@@ -120,4 +120,33 @@
             }
         }
     }
+
+    p + h2,
+    div + h2 {
+        margin-top: 2em;
+    }
+
+    p + h3,
+    div + h3 {
+        margin-top: 1.2em;
+    }
+
+    table:not(.lntable) {
+        border-collapse: collapse;
+        text-align: left;
+        margin: .2em auto;
+
+        tr {
+            border-bottom: 1px solid;
+        }
+        th,
+        td {
+            border: 1px solid lightgrey;
+            padding: 0.25rem 0.75rem;
+        }
+        thead {
+            border-bottom: 2px solid #a2a6af;
+            background: whitesmoke;
+        }
+    }
 }
