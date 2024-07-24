@@ -1,4 +1,11 @@
 {{ define "main" }}
+
+<!-- Let's process a bit the markdown content before rendering it -->
+{{ $content := .RawContent }}
+
+<!-- Inline code: allow syntax highlighting with the code_inline shortcode -->
+{{ $content = replaceRE "`#!([a-z]+) ([^`]+)`" "{{< code_inline $1 >}}$2{{< /code_inline >}}" $content }}
+
 <article id="body" class="post">
     {{ .TableOfContents }}
     {{ $content | .RenderString }}
