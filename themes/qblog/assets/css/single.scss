@@ -33,6 +33,10 @@
                 margin-right: 20px;
             }
         }
+        & > pre {
+            // For simple code blocks, not syntax highlighted
+            padding: 3px 6px;
+        }
         code {
             background: none;
             padding: 0;
@@ -71,21 +75,6 @@
     pre:not(.chroma),
     div.highlight {
         $negative-margin: 20px;
-        /*
-        border: 1px solid $main-border-color;
-        background: #f9fafb;
-        margin: 10px #{-$negative-margin};
-        padding: 10px $negative-margin;
-        border-radius: 5px;
-        font-size: 13px;
-        overflow-x: auto;
-
-        code {
-            background: none;
-            padding: 0;
-            border-radius: 0;
-            line-height: $line-height;
-        }*/
     }
 
     figure {
