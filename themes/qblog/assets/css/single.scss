@@ -158,3 +158,61 @@
         }
     }
 }
+
+@media (min-width: 1500px) {
+    // Make the ToC sticky on the right side when the screen is large enough
+    #TableOfContents {
+        position: sticky;
+        top: 1em;
+
+        ul {
+            // All levels of titles
+            padding-left: 0;
+            margin: 0;
+            list-style-type: "•";
+            list-style-position: outside;
+
+            li {
+                margin-bottom: 0.4em;
+                padding-left: 5px;
+                color: $blue-primary;
+            }
+        }
+
+        & > ul {
+            // First level of titles (h2)
+            position: absolute;
+            left: calc(100% + $main-padding);
+            top: 0;
+            width: 230px;
+            background: #f4f5f7;
+            border-top: 1px solid $main-border-color;
+            border-right: 1px solid $main-border-color;
+            border-bottom: 1px solid $main-border-color;
+            border-left: 1px solid #e8eef9;
+            border-top-right-radius: 1em;
+            border-bottom-right-radius: 1em;
+            padding: 1em;
+
+            &::before {
+                content: 'Table of Contents';
+                display: block;
+                margin-bottom: 1em;
+                color: #98a3b7;
+            }
+
+            ul {
+                // Second level of titles (h3)
+                padding-left: 1em;
+                font-size: 0.9em;
+                margin-top: 0.4em;
+            }
+        }
+    }
+}
+
+@media (max-width: 1500px) {
+    #TableOfContents {
+        display: none;
+    }
+}
