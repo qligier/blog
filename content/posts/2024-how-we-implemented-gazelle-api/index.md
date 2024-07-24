@@ -8,21 +8,28 @@ description: "The blog post describes how we implemented the EVS Client's new va
 
 ## About Gazelle and the EVS Client
 
-IHE Gazelle is an ecosystem of integrated tools designed to support interoperability testing and conformance
-assessment for health information technology systems.
+Gazelle is an ecosystem of integrated tools designed to support interoperability testing and conformance  assessment 
+for health information technology systems.
+It is developed by the team at Kereval, for IHE Europe and integrates various components, like 
+
+The Gazelle platform is mainly used by IHE Europe to organize Connectathons, where vendors and developers can test their
+implementations against each other.
+The platform is also used by various national health agencies, like Switzerland's eHealth Suisse, to test their 
+national integration profiles.
 
 The EVS Client is one of the technical components of Gazelle; its name is the acronym of _External Validation
-Service_. It is used to verify the conformance of messages and documents exchanged .
+Service_.
+It is the component that offers a unified interface (both graphical -- GUI -- and programmatic -- API) to both users 
+and other components.
+It contains the configuration of all available validators, and stores the results of all validations performed.
 
-The EVS Client is one of the main components used during IHE Europe Connectathons,
-
-The team at Kereval is refactoring major parts of Gazelle, including the EVS Client, to improve its usability, efficiency,
-and capabilities.
+The team at Kereval is refactoring major parts of Gazelle, including the EVS Client, to improve its usability, 
+efficiency, and capabilities.
 A new validation API is being developed to allow interfacing other specialized validators in the EVS Client GUI.
 
 ## About Matchbox
 
-Matchbox is an open-source FHIR server based on the HAPI FHIR JPA Server Starter.
+Matchbox is an open-source FHIR server based on the HAPI FHIR JPA Server Starter and developed by ahdis.
 It offers several key features and functionalities:
 
 1. Implementation Guide Support: Matchbox can pre-load FHIR implementation guides from package servers for
@@ -35,10 +42,13 @@ It offers several key features and functionalities:
 
 Matchbox is designed to be a versatile FHIR server solution, catering to various deployment scenarios and offering
 robust support for FHIR implementation guides and related operations.
+It would be a valuable addition to the EVS Client's list of supported validators, offering validation of FHIR-based 
+IHE profiles like [MHD](https://profiles.ihe.net/ITI/MHD/index.html),
+[PDQm](https://profiles.ihe.net/ITI/PDQm/index.html) or [PCF](https://profiles.ihe.net/ITI/PCF/index.html).
 
 ## Investigating the new API
 
-Kereval is developing a new {{< abbr API >}} to allow interfacing other specialized validators in the EVS Client GUI.
+The team at Kereval is developing a new {{< abbr API >}} to interface validators in the EVS Client.
 The documentation is still scarce, but the first version of the API is already implemented in the EVS Client.
 Some of its components are available in open-source repositories:
 
@@ -114,14 +124,18 @@ simple DTOs, but they contained some business logic too.
 I will copy some of these methods to the new classes, but I will keep them as simple as possible.
 
 And voilà!
-We are pretty much done with the implementation of the new API.
-Now, we need to process the requests and generates meaningful responses to successfully integrate with the EVS Client.
+We are pretty much done with the implementation of the new API itself.
 
 ## Processing the requests
+
+Now, we need to process the requests and generates meaningful responses to successfully integrate with the EVS Client.
+
+### Listing validation profiles
 
 The easiest endpoint to process is the `GET /profiles` route.
 It allows the EVS Client to know all validators supported by Matchbox, and show them in the EVS Client GUI.
 In FHIR, these validators are called profiles, and they are used to validate FHIR resources.
+Looking at the HTTP Validator gives us a first idea of what we need to return in this endpoint.
 
 We list all the profiles loaded in Matchbox, and return them as a JSON array.
 We return both the FHIR profile identifier, used by Matchbox to locate the profile, and the FHIR 
@@ -139,6 +153,12 @@ Finally, we filter extensions from the list of profiles, because they are never 
   "coveredItems": []
 }
 ```
+
+The following image shows the list of validation profiles, as displayed currently in the EVS Client GUI.
+
+![A list of validation profiles](profile_list.png "The list of validation profiles, as displayed in the EVS Client GUI")
+
+### Validating items
 
 The second endpoint, `POST /validate`, is more complex and requires more work.
 We receive a list of items to validate against a specific profile, and we need to return a validation report for each 
@@ -184,7 +204,7 @@ the validation quality.
     {
       "name": "profileVersion",
       "value": "4.0.1"
-    },
+    }
     // …
   ],
   "reports": [
@@ -239,6 +259,11 @@ the validation quality.
 }
 ```
 
+The following image shows a validation report, as displayed currently in the EVS Client GUI.
+
+![A validation report](validation_report.png "The list of validation profiles, as displayed in the EVS Client 
+GUI")
+
 ## Testing the Gazelle EVS Client integration
 
 Now that we have implemented the new API, we need to test it in real conditions.
@@ -258,12 +283,13 @@ spend time fixing issues during the Connectathon, where we had already enough wo
 
 ## Conclusion
 
-
 The resulting implementation can be seen in the
 [package ch.ahdis.matchbox.gazelle](https://github.com/ahdis/matchbox/tree/main/matchbox-server/src/main/java/ch/ahdis/matchbox/gazelle).
 
+In this article, we demonstrated how we implemented the Gazelle EVS Client's new validation API in Matchbox.
+We showed how we analyzed existing information about the API, the technical decisions we made to implement it, what were
+the main issues we encountered, and how we tested the integration with the EVS Client.
 
-
-Good collab
-
-Quick implementation
+Thanks to an excellent collaboration with the Gazelle team, we were able to discuss various aspects of the API, to get
+support and feedback on our implementation, and to report bugs encountered during the testing phase.
+This really facilitated the integration of the new API in Matchbox, and we are looking forward to further collaboration.
