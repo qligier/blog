@@ -14,7 +14,7 @@
         $negative-margin: 20px;
         border: 1px solid $main-border-color;
         background: #f9fafb;
-        margin: 10px #{-$negative-margin};
+        margin: 2em #{-$negative-margin};
         padding: 0;
         border-radius: 5px;
         font-size: 13px;
@@ -90,7 +90,7 @@
 
     figure {
         display: table;
-        margin: 1em auto;
+        margin: 2em auto;
         img {
             box-shadow: 0 0 20px 0 $white2;
         }

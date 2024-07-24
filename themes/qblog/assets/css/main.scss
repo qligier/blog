@@ -21,6 +21,7 @@ main {
     margin: 0 auto;
     max-width: $max-width;
     color: #4b505a;
+    position: relative;
 
     a {
         color: $red-primary;
@@ -62,7 +63,7 @@ main {
     min-height: calc(100vh - #{$header-height + $footer-height});
     width: 100%;
     display: inline-block;
-    background-color: #fff;
+    background: #fff;
     padding: $main-padding;
     border-left: 1px solid $main-border-color;
     border-right: 1px solid $main-border-color;
