@@ -1,5 +1,5 @@
 ---
-title: "Beginners guide to Apache Camel, IPF and Husky for the Swiss EPR"
+title: "Beginners guide to Apache Camel and IPF for the Swiss EPR"
 date: 2024-07-14
 draft: true
 tags: ['Development', 'IPF', 'Camel', 'Java', 'Swiss EPR']
@@ -51,25 +51,60 @@ using the converter.
 
 ## About IPF and Husky
 
-IPF (IHE Platform Framework) is a Java framework that provides a set of tools to implement IHE profiles.
-It is built on top of Camel and provides a set of components, type converters, and utilities to implement IHE profiles
-in Java.
-Husky is a set of tools that provides a set of components, type converters, and utilities to implement the Swiss EPR
-profile in Java.
-It is built on top of IPF and provides a set of components, type converters, and utilities to implement the Swiss EPR
-profile in Java.
+The Open eHealth Integration Platform, commonly known as IPF, is a Java framework that provides an extension to 
+Apache Camel to support common interfaces for health-care related data exchange, mainly around IHE and HL7 
+specifications.
+It contains a set of components, type converters, and utilities that will make easy for us to implement the Swiss EPR
+in a Java application.
 
 ## Setting up your application
 
+As said, we will focus here on a Spring Boot application, as it is the most common way to use IPF and Camel together.
+You can use IPF without Spring Boot, but it will be more difficult to set up and use, requiring you to manually 
+configure the Camel context and some of the IPF components.
+
 ### Adding the dependencies
 
-Camel + Spring
+To import IPF dependencies in the project, we will use the Spring Boot starter artifacts, providing all necessary 
+dependencies and auto-configuration:
+
+```xml
+<project xmlns="http://maven.apache.org/POM/4.0.0">
+  <properties>
+    <ipf-version>4.8.0</ipf-version>
+  </properties>
+  
+  <dependencies>
+    <dependency>
+      <groupId>org.openehealth.ipf.boot</groupId>
+      <artifactId>ipf-xds-spring-boot-starter</artifactId>
+      <version>${ipf-version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.openehealth.ipf.boot</groupId>
+      <artifactId>ipf-hl7v3-spring-boot-starter</artifactId>
+      <version>${ipf-version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.openehealth.ipf.boot</groupId>
+      <artifactId>ipf-hpd-spring-boot-starter</artifactId>
+      <version>${ipf-version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.openehealth.ipf.commons</groupId>
+      <artifactId>ipf-commons-ihe-xua</artifactId>
+      <version>${ipf-version}</version>
+    </dependency>
+  </dependencies>
+</project>
+```
 
 ### Configuration at startup
 
 The first step to send a message with Camel is to instantiate the client that will send the message.
 The client is an instance of the `ProducerTemplate` class, which is instantiated from the Camel context.
-The Camel context is automatically instantiated by ???? and you can autowire it with Spring Boot.
+The Camel context is automatically instantiated by `org.apache.camel:camel-spring` and you can autowire it with 
+Spring Boot.
 
 ```java {title="Camel client instantiation"}
 @Config
@@ -213,8 +248,6 @@ public class AppConfig {
 
 You can refer to the ['ATNA Auditing' IPF documentation](https://oehf.github.io/ipf-docs/docs/ihe/atna/) for more details.
 
-TODO: Add details about XUA processing.
-
 ### Other options
 
 Other options can be set in the endpoint URI to configure the transaction. Some of the most common ones are:
@@ -232,15 +265,80 @@ Now that we know how to build the endpoint URI, assuming you know the particular
 community, and that we know how to configure the mTLS and audit context, we need to write the requests and read the 
 response.
 
+The IPF documentation provides information about the data models that can be used for each transaction.
+I am listing here the models I recommend to use for the Swiss EPR transactions:
 
-Recommended types:
+| Transaction message | Recommended data object                                                                                                                                              |
+|---------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| ITI-45 request      | [PixV3QueryRequest](https://oehf.github.io/ipf-docs/_pages/apidocs/org/openehealth/ipf/commons/ihe/hl7v3/core/requests/PixV3QueryRequest.html)                       |
+| ITI-45 response     | [PixV3QueryResponse](https://oehf.github.io/ipf-docs/_pages/apidocs/org/openehealth/ipf/commons/ihe/hl7v3/core/responses/PixV3QueryResponse.html)                    |
+| ITI-47 request      | `PRPAIN201305UV02Type`                                                                                                                                               |
+| ITI-47 response     | `PRPAIN201306UV02Type`                                                                                                                                               |
+| ITI-44 request      | `PRPAIN201301UV02Type`, `PRPAIN201302UV02Type`, `PRPAIN201304UV02Type`                                                                                               |
+| ITI-44 response     | `MCCIIN000002UV01Type`                                                                                                                                               |
+| ITI-18 request      | [QueryRegistry](https://oehf.github.io/ipf-docs/_pages/apidocs/org/openehealth/ipf/commons/ihe/xds/core/requests/QueryRegistry.html)                                 |
+| ITI-18 response     | [QueryResponse](https://oehf.github.io/ipf-docs/_pages/apidocs/org/openehealth/ipf/commons/ihe/xds/core/responses/QueryResponse.html)                                |
+| ITI-41 request      | [ProvideAndRegisterDocumentSet](https://oehf.github.io/ipf-docs/_pages/apidocs/org/openehealth/ipf/commons/ihe/xds/core/requests/ProvideAndRegisterDocumentSet.html) |
+| ITI-41 response     | [Response](https://oehf.github.io/ipf-docs/_pages/apidocs/org/openehealth/ipf/commons/ihe/xds/core/responses/Response.html)                                          |
+| ITI-43 request      | [RetrieveDocumentSet](https://oehf.github.io/ipf-docs/_pages/apidocs/org/openehealth/ipf/commons/ihe/xds/core/requests/RetrieveDocumentSet.html)                     |
+| ITI-43 response     | [RetrievedDocumentSet](https://oehf.github.io/ipf-docs/_pages/apidocs/org/openehealth/ipf/commons/ihe/xds/core/responses/RetrievedDocumentSet.html)                  |
+| ITI-57 request      | [RegisterDocumentSet](https://oehf.github.io/ipf-docs/_pages/apidocs/org/openehealth/ipf/commons/ihe/xds/core/requests/RegisterDocumentSet.html)                     |
+| ITI-57 response     | [Response](https://oehf.github.io/ipf-docs/_pages/apidocs/org/openehealth/ipf/commons/ihe/xds/core/responses/Response.html)                                          |
+| ITI-58 request      | [BatchRequest](https://oehf.github.io/ipf-docs/_pages/apidocs/org/openehealth/ipf/commons/ihe/hpd/stub/dsmlv2/BatchRequest.html)                                     |
+| ITI-58 response     | [BatchResponse](https://oehf.github.io/ipf-docs/_pages/apidocs/org/openehealth/ipf/commons/ihe/hpd/stub/dsmlv2/BatchResponse.html)                                   |
 
+When the request body is created, we can now initiate an instance of the transaction, set the request, send it and 
+read the response.
+In Camel, a transaction instance is an instance of the `Exchange` class, which contains the request and the response,
+plus other properties.
 
-### Inserting the XUA assertion
+```java {title="Creating an Exchange"}
+Exchange exchange = new DefaultExchange(producerTemplate.getCamelContext(), ExchangePattern.InOut);
+```
 
-For the XDS transactions, you will need to insert a XUA assertion in the message, to authorize you to access the patient
-record.
-The XUA assertion is a SAML token that you got from your EPR community.
+The first parameter is used to bind the exchange to the Camel context (to access its bean registry), and the second 
+one is the exchange pattern: it informs Camel we are expecting a response.
+
+We can then set the request in the _Exchange_ body.
+In that exchange pattern, the request is called _In_, and the response is called _Out_, which can be confusing when 
+implementing the client actor.
+
+```java {title="Setting the request in the Exchange"}
+final var pixRequest = new PixV3QueryRequest();
+pixRequest.setQueryPatientId(new II("2.756.1.2.3.4", "patient-12345"));
+// Set other request parameters
+
+exchange.getIn().setBody(pixRequest);
+```
+
+The request is now ready to be sent to the endpoint.
+This is done through the _ProducerTemplate_ instance:
+  
+```java {title="Sending the request"}
+final var endpointUri = "pixv3-iti45://www.example.com?secure=true&sslContextParameters=#eprTlsContext";
+exchange = producerTemplate.send(endpointUri, exchange);
+```
+
+The method is synchronous and will block until the response is received.
+The response is now in the _Out_ body, and it must be read not with the `getOut()` method, but with the `getMessage()`
+for some reason.
+But before reading the response, you should check if the exchange has been successful, as the response can be null if
+the transaction failed.
+In that case, an exception can be found in the exchange properties.
+
+```java {title="Checking the response"}
+if (exchange.getException() !== null) {
+  throw result.getException();
+}
+final PixV3QueryResponse response = exchange.getMessage().getBody(PixV3QueryResponse.class);
+response.getPatientIds(); // Do something with the response
+```
+
+### Using a XUA assertion
+
+For the XDS transactions, you will need to insert a XUA assertion in the message, to be authorized to access the 
+patient record.
+The XUA assertion is a SAML token that you get from your EPR community.
 
 As we have seen earlier, when using IPF or Husky types in SOAP transactions, you only control the SOAP body, and the 
 SOAP envelope is generated automatically.
@@ -283,7 +381,6 @@ IPF is [looking for a specific message header](https://oehf.github.io/ipf-docs/d
 name is contained in the constant `AbstractWsEndpoint.OUTGOING_SOAP_HEADERS`, and will automatically insert it in the
 outgoing SOAP envelope.
 
-<!-- TODO: implement admonitions -->
 **Warning**: when dealing with SAML assertions, you should be aware that the assertion is a signed XML element, and that 
 you need to keep the original XML format when inserting it in the message.
 Otherwise, the signature will be invalid, and the message will be rejected by the server.
