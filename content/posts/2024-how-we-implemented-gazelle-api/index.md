@@ -6,15 +6,24 @@ tags: ['Development', 'Java', 'Matchbox', 'Interoperability']
 description: "The blog post describes how we implemented the EVS Client's new validation API in Matchbox."
 ---
 
+ql: 
+
+1. could a short summary be added what the blog post is about
+2. the reason why we wanted to adopt the new API and not just use the old one (native integration without evs Client addional validation logic, less configuration work, increased performance)
+3. a short outlook what it makes it possible (r5 intehration)
+4. some additional hyperlinks would be useful
+
+
+
 ## About Gazelle and the EVS Client
 
 Gazelle is an ecosystem of integrated tools designed to support interoperability testing and conformance  assessment 
 for health information technology systems.
-It is developed by the team at Kereval, for IHE Europe and integrates various components, like 
+The Gazelle plattform is developed by the team at Kereval, for IHE Catalyst and integrates various components. Matchbox is part of the Gazelle Ecosystem of tools.
 
-The Gazelle platform is mainly used by IHE Europe to organize Connectathons, where vendors and developers can test their
+Gazelle is used by IHE Catalyst to organize Connectathons, where vendors and developers can test their
 implementations against each other.
-The platform is also used by various national health agencies, like Switzerland's eHealth Suisse, to test their 
+Gazelle is also used by various national health agencies, like Switzerland's eHealth Suisse, to test their 
 national integration profiles.
 
 The EVS Client is one of the technical components of Gazelle; its name is the acronym of _External Validation
