@@ -3,28 +3,31 @@ title: "How we implemented the Gazelle EVS Client's new validation API in Matchb
 date: 2024-07-14
 draft: true
 tags: ['Development', 'Java', 'Matchbox', 'Interoperability']
-description: "The blog post describes how we implemented the EVS Client's new validation API in Matchbox."
+description: "The blog post describes how we implemented the EVS Client's new validation API in Matchbox, explaining 
+the reason to do so, detailing the steps to implement the interface and technical decisions, and demonstrating the 
+results."
 ---
 
-ql: 
-
-1. could a short summary be added what the blog post is about
-2. the reason why we wanted to adopt the new API and not just use the old one (native integration without evs Client addional validation logic, less configuration work, increased performance)
-3. a short outlook what it makes it possible (r5 intehration)
-4. some additional hyperlinks would be useful
-
-
+The blog post describes the implementation of the new validation API for the Gazelle EVS Client in Matchbox.
+It explains the motivation behind adopting the new API, such as native integration, reduced configuration work,
+and increased performance.
+The post details the steps taken to investigate the API, implement it using Spring Web MVC, and process validation 
+requests.
+It also highlights the testing process and collaboration with the Gazelle team, concluding with a successful
+integration tested during the IHE Europe Connectathon.
 
 ## About Gazelle and the EVS Client
 
-Gazelle is an ecosystem of integrated tools designed to support interoperability testing and conformance  assessment 
-for health information technology systems.
-The Gazelle plattform is developed by the team at Kereval, for IHE Catalyst and integrates various components. Matchbox is part of the Gazelle Ecosystem of tools.
+[Gazelle](https://www.ihe-europe.net/testing-IHE/gazelle) is an ecosystem of integrated tools designed to support 
+interoperability testing and conformance assessment for health information technology systems.
+The Gazelle platform is developed by the team at [Kereval](https://www.kereval.com), for
+[IHE Catalyst](https://ihe-catalyst.net) and integrates various components.
+[Matchbox](https://www.matchbox.health) is part of the Gazelle Ecosystem of tools.
 
-Gazelle is used by IHE Catalyst to organize Connectathons, where vendors and developers can test their
-implementations against each other.
-Gazelle is also used by various national health agencies, like Switzerland's eHealth Suisse, to test their 
-national integration profiles.
+Gazelle is used by IHE Catalyst to organize [Connectathons](https://www.ihe.net/testing/connectathon/), where 
+vendors and developers can test their implementations against each other.
+Gazelle is also used by various national health agencies, like Switzerland's 
+[eHealth Suisse](https://www.e-health-suisse.ch/), to test their national integration profiles.
 
 The EVS Client is one of the technical components of Gazelle; its name is the acronym of _External Validation
 Service_.
@@ -38,7 +41,9 @@ A new validation API is being developed to allow interfacing other specialized v
 
 ## About Matchbox
 
-Matchbox is an open-source FHIR server based on the HAPI FHIR JPA Server Starter and developed by ahdis.
+Matchbox is an open-source FHIR server based on the
+[HAPI FHIR JPA Server Starter](https://hapifhir.io/hapi-fhir/docs/server_jpa/introduction.html) and developed by 
+[ahdis](https://www.ahdis.ch).
 It offers several key features and functionalities:
 
 1. Implementation Guide Support: Matchbox can pre-load FHIR implementation guides from package servers for
@@ -58,6 +63,24 @@ IHE profiles like [MHD](https://profiles.ihe.net/ITI/MHD/index.html),
 ## Investigating the new API
 
 The team at Kereval is developing a new {{< abbr API >}} to interface validators in the EVS Client.
+Matchbox is already integrated through the FHIR validation operation, but using the new API will bring many benefits 
+through a native integration.
+The new API:
+
+- decreases the configuration work, as the EVS Client is now able to discover the supported profiles
+  automatically; the FHIR validation operation required the user to configure the server's URL and the profiles to
+  validate;
+- increases the performance of the validation process, as the EVS Client will be able to send multiple
+  items to validate in a single request; the FHIR validation operation supported only one item per validation request;
+- allows the EVS Client to display more information about the validation process, like the loaded
+  implementation guides or the parameters used for the validation in additional metadata; while the information is 
+  also returned in the FHIR validation response, it is displayed as a validation message instead;
+- decouples the API from the FHIR version, since the FHIR validation operation uses versioned FHIR resources; we can now
+  run Matchbox with FHIR R5 only for example, without needing to reimplement the validation operation for each FHIR 
+  version in the EVS Client.
+
+Advantages of the new API are clear, and we decide to implement it in Matchbox.
+The first step is to investigate the API and understand its structure and requirements.
 The documentation is still scarce, but the first version of the API is already implemented in the EVS Client.
 Some of its components are available in open-source repositories:
 
@@ -72,7 +95,8 @@ class.
 It provides useful information about the API design and that particular implementation.
 We can see two endpoints in it, `POST /validate` and `GET /profiles`, along with the models
 for the requests and responses, and some OpenAPI annotations.
-The webservice is defined with Jakarta RESTful Web Services (JAX-RS), in the new `jakarta` namespace.
+The webservice is defined with [Jakarta RESTful Web Services](https://projects.eclipse.org/projects/ee4j.rest) 
+(JAX-RS), in the new `jakarta` namespace.
 
 ```java {hl_lines="10 16" title="Structure of ValidationApiWS.java"}
 package net.ihe.gazelle.validation.interlay.ws;
@@ -95,11 +119,14 @@ public interface ValidationApiWS {
 ```
 
 While this implementation seems to provide everything to start developing our interface, I would prefer not to
-depend on these dependencies, since Matchbox is already dependent on HAPI FHIR and Spring Boot.
-These two dependencies are responsible for managing the servlet container(s), and they don't implement the {{< abbr JAX-RS >}}
-specification; Spring MVC provides its own way to define RESTful services.
+depend on these dependencies, since Matchbox is already dependent on [HAPI FHIR](https://hapifhir.io/hapi-fhir/) and 
+[Spring Boot](https://spring.io/projects/spring-boot).
+These two dependencies are responsible for managing the servlet container(s), and they don't implement the
+{{< abbr JAX-RS >}} specification; Spring Web MVC provides its own way to 
+[define RESTful services](https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-requestmapping.html).
 Adding another dependency to manage the JAX-RS specification would be redundant and could lead to conflicts; luckily,
-the Spring MVC annotations are very similar to the JAX-RS annotations, and we can easily map the formers to the latters.
+the Spring Web MVC annotations are very similar to the JAX-RS annotations, and we can easily map the former to the 
+latter.
 
 ```java {title="Equivalent implementation with Spring MVC"}
 package ch.ahdis.matchbox.gazelle;
@@ -114,19 +141,20 @@ public class GazelleValidationWs {
     }
 
     @GetMapping(path = "/profiles", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List< ValidationProfile> getProfiles() {
+    public List<ValidationProfile> getProfiles() {
         // List profiles
     }
 }
 ```
 
 That was a simple job, but we still need to implement the models for the requests and responses.
-The validation service implement the Data Transfer Objects (DTOs) with really Java-esque Design Patterns: there
+The validation service implement the Data Transfer Objects (DTOs) with really
+[Java-esque Design Patterns](https://javadesignpatterns.com/catalog/): there
 are interfaces, factories, builders, validators, visitors, mappers between DTOs and Domain Objects, and so on.
 We don't really need all that complexity to simply serialize and deserialize the requests and responses from/to
 their JSON representation.
-There 13 classes in total, quickly built with Lombok annotations (immediately followed by Delombok to allow changing
-the source code in some places) and 3 enums.
+There 13 classes in total, quickly built with [Lombok](https://projectlombok.org) annotations (immediately followed 
+by Delombok to allow changing the source code in some places) and 3 enums.
 
 While copying the fields from the original classes to the new ones, I noticed that the original classes were not exactly
 simple DTOs, but they contained some business logic too.
@@ -137,20 +165,23 @@ We are pretty much done with the implementation of the new API itself.
 
 ## Processing the requests
 
-Now, we need to process the requests and generates meaningful responses to successfully integrate with the EVS Client.
+Now, we need to process requests for both routes and generates meaningful responses to successfully integrate with the 
+EVS Client.
 
 ### Listing validation profiles
 
 The easiest endpoint to process is the `GET /profiles` route.
 It allows the EVS Client to know all validators supported by Matchbox, and show them in the EVS Client GUI.
-In FHIR, these validators are called profiles, and they are used to validate FHIR resources.
+In FHIR, these validators are called [profiles](https://hl7.org/fhir/R4/profiling.html), and they are used to 
+validate FHIR resources.
 Looking at the HTTP Validator gives us a first idea of what we need to return in this endpoint.
 
 We list all the profiles loaded in Matchbox, and return them as a JSON array.
 We return both the FHIR profile identifier, used by Matchbox to locate the profile, and the FHIR 
-StructureDefinition's title, as it is more human-friendly for users to select in a list of choices.
-We add the profile's version, because Implementation Guides may have multiple versions loaded in Matchbox at the
-same time, and we need to distinguish between them.
+[StructureDefinition](https://hl7.org/fhir/R4/structuredefinition.html)'s title, as it is more human-friendly for 
+users to select in a list of choices.
+We add the profile's version, because [Implementation Guides](https://hl7.org/fhir/R4/implementationguide.html) may 
+have multiple versions loaded in Matchbox at the same time, and we need to distinguish between them.
 We also add the Implementation Guide id, to allow the EVS Client to filter or group profiles in the interface.
 Finally, we filter extensions from the list of profiles, because they are never validated directly.
 
@@ -172,10 +203,12 @@ The following image shows the list of validation profiles, as displayed currentl
 The second endpoint, `POST /validate`, is more complex and requires more work.
 We receive a list of items to validate against a specific profile, and we need to return a validation report for each 
 item.
-We start by initializing a Matchbox engine for the given profile, and we validate each item with it.
+We start by initializing a [Matchbox engine](https://ahdis.github.io/matchbox/matchbox-engine/) for the given 
+profile, and we validate each item with it.
 
 The second step is to convert the FHIR validation report to what is expected by the EVS Client.
-Both have a similar but different concepts: for example, FHIR's issue severity must be converted to the EVS Client's
+Both have a similar but different concepts: for example, FHIR's
+[issue severity](https://www.hl7.org/fhir/r4/valueset-issue-severity.html) must be converted to the EVS Client's 
 priority, level and severity.
 We map the fields as good as we can, and we add some additional information to the report, such as slicing information
 when it is available.
@@ -270,7 +303,7 @@ the validation quality.
 
 The following image shows a validation report, as displayed currently in the EVS Client GUI.
 
-![A validation report](validation_report.png "The list of validation profiles, as displayed in the EVS Client 
+![A validation report](validation_report.png "The validation report of a FHIR resource, as displayed in the EVS Client 
 GUI")
 
 ## Testing the Gazelle EVS Client integration
@@ -285,7 +318,8 @@ Most of the fixes are straightforward, and we can quickly deploy a new version o
 Only a single issue stays unresolved, because it needs more refactoring in the EVS Client.
 Hopefully, it is not blocking, and the next test session gives excellent results.
 
-More recently, the integration was tested more intensively during the IHE Europe Connectathon in Trieste, in June 2024.
+More recently, the integration was tested more intensively during the
+[IHE Europe Connectathon in Trieste](https://connectathon.ihe-europe.net/node/306), in June 2024.
 No new issue was uncovered at that occasion, the validator worked well during the whole week.
 While it was not the most used validator, it was still a good stress test; furthermore, we were happy not to have to
 spend time fixing issues during the Connectathon, where we had already enough work to accomplish.
