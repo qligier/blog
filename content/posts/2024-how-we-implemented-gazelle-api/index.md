@@ -3,9 +3,7 @@ title: "How we implemented the Gazelle EVS Client's new validation API in Matchb
 date: 2024-07-14
 draft: true
 tags: ['Development', 'Java', 'Matchbox', 'Interoperability']
-description: "The blog post describes how we implemented the EVS Client's new validation API in Matchbox, explaining 
-the reason to do so, detailing the steps to implement the interface and technical decisions, and demonstrating the 
-results."
+description: "Matchbox is used within the Gazelle ecosystem for validating FHIR-based content. In this blog post, you find out the advantages of the EVS Client's new validation API, the reasons for this integration in Matchbox and details about the steps and necessary decisions we made."
 ---
 
 The blog post describes the implementation of the new validation API for the Gazelle EVS Client in Matchbox.
@@ -27,7 +25,8 @@ The Gazelle platform is developed by the team at [Kereval](https://www.kereval.c
 Gazelle is used by IHE Catalyst to organize [Connectathons](https://www.ihe.net/testing/connectathon/), where 
 vendors and developers can test their implementations against each other.
 Gazelle is also used by various national health agencies, like Switzerland's 
-[eHealth Suisse](https://www.e-health-suisse.ch/), to test their national integration profiles.
+[eHealth Suisse](https://www.e-health-suisse.ch/), to support the interoperability testing of IHE specifications
+in a national context.
 
 The EVS Client is one of the technical components of Gazelle; its name is the acronym of _External Validation
 Service_.
@@ -51,8 +50,10 @@ It offers several key features and functionalities:
    and StructureDefinition.
 2. Validation: It provides validation support through the [server]/$validate endpoint, allowing users to check
    FHIR resources for conformance with loaded implementation guides.
-3. FHIR Mapping Language: Matchbox includes endpoints for creating StructureMaps and supports the StructureMap/$transform operation.
-4. Structured Data Capture (SDC): It offers SDC extraction support based on the FHIR Mapping language and Questionnaire/$extract.
+3. FHIR Mapping Language: Matchbox includes endpoints for creating StructureMaps and supports the 
+   StructureMap/$transform operation.
+4. Structured Data Capture (SDC): It offers SDC extraction support based on the FHIR Mapping language and
+   Questionnaire/$extract.
 
 Matchbox is designed to be a versatile FHIR server solution, catering to various deployment scenarios and offering
 robust support for FHIR implementation guides and related operations.
@@ -67,17 +68,17 @@ Matchbox is already integrated through the FHIR validation operation, but using 
 through a native integration.
 The new API:
 
-- decreases the configuration work, as the EVS Client is now able to discover the supported profiles
-  automatically; the FHIR validation operation required the user to configure the server's URL and the profiles to
-  validate;
+- decreases the configuration work in the EVS Client, as it is now able to discover the supported profiles
+  automatically;
 - increases the performance of the validation process, as the EVS Client will be able to send multiple
-  items to validate in a single request; the FHIR validation operation supported only one item per validation request;
+  items to validate in a single request; in addition, the EVS Client implements the API directly, the previous
+  integration needed a separate component to implement the Matchbox validation, which increased the complexity and
+  maintenance because the component would need to be updated for each new version;
 - allows the EVS Client to display more information about the validation process, like the loaded
   implementation guides or the parameters used for the validation in additional metadata; while the information is 
   also returned in the FHIR validation response, it is displayed as a validation message instead;
-- decouples the API from the FHIR version, since the FHIR validation operation uses versioned FHIR resources; we can now
-  run Matchbox with FHIR R5 only for example, without needing to reimplement the validation operation for each FHIR 
-  version in the EVS Client.
+- decouples the API from the FHIR version; with the new API, we can directly support all FHIR versions like R5, and
+  also support multiple FHIR versions with the same Matchbox instance.
 
 Advantages of the new API are clear, and we decide to implement it in Matchbox.
 The first step is to investigate the API and understand its structure and requirements.
