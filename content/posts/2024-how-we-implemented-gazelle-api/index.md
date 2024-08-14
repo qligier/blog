@@ -6,13 +6,15 @@ tags: ['Development', 'Java', 'Matchbox', 'Interoperability']
 description: "Matchbox is used within the Gazelle ecosystem for validating FHIR-based content. In this blog post, you find out the advantages of the EVS Client's new validation API, the reasons for this integration in Matchbox and details about the steps and necessary decisions we made."
 ---
 
-The blog post describes the implementation of the new validation API for the Gazelle EVS Client in Matchbox.
-It explains the motivation behind adopting the new API, such as native integration, reduced configuration work,
-and increased performance.
-The post details the steps taken to investigate the API, implement it using Spring Web MVC, and process validation 
-requests.
-It also highlights the testing process and collaboration with the Gazelle team, concluding with a successful
-integration tested during the IHE Europe Connectathon.
+EVS Client, the client application for performing validations with the Gazelle ecosystem, has released a new validation
+API.
+Matchbox, our FHIR application, was already integrated with the EVS Client.
+The new validation API offers several advantages like reduced configuration and increased performance.
+This blog post investigates the new API, describes its structure, and requirements and shows how we implemented the
+API in Matchbox.
+Together with the Gazelle team, we tested the integration and resolved issues encountered during the testing phase and
+at the connectathon.
+The new API integration is available in the current Matchbox release.
 
 ## About Gazelle and the EVS Client
 
