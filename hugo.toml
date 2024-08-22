@@ -5,6 +5,8 @@ theme = 'qblog'
 copyright = '© 2024 Quentin Ligier'
 
 [params]
+  description = 'The personal blog of Quentin Ligier'
+  copyright = '© 2024 Quentin Ligier'
   [params.author]
     name = 'Quentin Ligier'
 
