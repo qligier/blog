@@ -1,10 +1,12 @@
 {{ $lang := .Type }}
 {{ $title := index .Attributes "title" }}
-<div class="qcode">
+<div class="qcode" itemscope itemtype="https://schema.org/SoftwareSourceCode">
+    <meta itemprop="codeSampleType" content="{{ $lang | safeHTMLAttr }}">
+    <meta content="Example">
     {{- with $title -}}
     <header>
         <img src="/images/lang/{{ $lang }}.svg" alt="{{ $lang }}"/>
-        {{- $title }}
+        <span itemprop="codeSampleType">{{- $title }}</span>
     </header>
     {{- end }}
     {{ transform.Highlight .Inner $lang .Options }}
