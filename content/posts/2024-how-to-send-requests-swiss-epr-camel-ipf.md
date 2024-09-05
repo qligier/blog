@@ -229,19 +229,26 @@ The
   You will need to define your `AuditEnterpriseSiteID`, and the mTLS configuration.
 
 ```java {hl_lines="4" title="AuditContext bean definition"}
-@Config
+@Configuration
 public class AppConfig {
 
     @Bean("eprAuditContext")
-    public AuditContext auditContext() throws Exception {
+    public AuditContext auditContext() {
+        final var tlsParameters = this.createAtnaTlsParameters();
         final var auditContext = new DefaultAuditContext();
-
-        auditContext.setTlsParameters(new TlsParameterTest(this.createSSLContextParameters()));
-        auditContext.setAuditTransmissionProtocol(new TCPSyslogSender());
-        context.setAuditEnterpriseSiteId("1.2.3");
-        context.setSendingApplication("MyApplication");
-
+        auditContext.setTlsParameters(tlsParameters);
+        auditContext.setAuditTransmissionProtocol(new MemoryAuditMessageTransmission(tlsParameters)); // TODO TCP sender
+        auditContext.setAuditSourceId("1.2.3");
+        auditContext.setAuditEnterpriseSiteId("1.2.3");
         return auditContext;
+    }
+
+    @Bean
+    public AuditMetadataProvider auditMetadataProvider() {
+        final var provider = new DefaultAuditMetadataProvider();
+        provider.setSendingApplication("MyApplication");
+        provider.setHostName("my-application-dev-01-srv");
+        return provider;
     }
 }
 ```
