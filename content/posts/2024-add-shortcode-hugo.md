@@ -15,14 +15,14 @@ The syntax chosen by the plugin that introduced this feature,
 the language: <code>#​!python print("Hello, World!")</code> (surrounded with backticks) would be rendered as 
 `#!python print("Hello, World!")`.
 
-This blog is powered by Hugo, a static site generator, and InlineHilite is not available for it.
+This blog is powered by [Hugo](https://gohugo.io/), a static site generator, and InlineHilite is not available for it.
 I wanted to keep the same syntax for the code snippets, as it makes writing and reading the source files more 
 pleasant for me.
 I searched for a similar feature in Hugo, but did not find any good solution to this question.
 After digging into the documentation, and testing multiple ideas, I found a way to implement the shebang syntax for 
 my blog.
 
-The first step is to create a shortcode in Hugo.
+The first step is to create a [shortcode](https://gohugo.io/content-management/shortcodes/) in Hugo.
 There are a lot of resources on the internet that explain how to create a shortcode, so the implementation will be fast.
 I checked the [Hugo implementation of the `highlight` shortcode](https://github.com/gohugoio/hugo/blob/master/tpl/tplimpl/embedded/templates/shortcodes/highlight.html),
 and I used it as a base for my shortcode, but there are many different implementations of this shortcode in the wild.
