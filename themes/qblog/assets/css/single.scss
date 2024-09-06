@@ -146,6 +146,13 @@
             background: whitesmoke;
         }
     }
+
+    .last-modified {
+        color: $blue-primary;
+        margin-top: -1em;
+        margin-bottom: 2em;
+        font-style: italic;
+    }
 }
 
 @media (min-width: 1500px) {

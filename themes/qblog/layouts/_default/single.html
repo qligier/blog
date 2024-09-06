@@ -8,6 +8,9 @@
 
 <article id="body" class="post">
     {{ .TableOfContents }}
+
+    <p class="last-modified">Last modified on {{ .Lastmod | time.Format ":date_long" }}</p>
+
     {{ $content | .RenderString }}
 </article>
 {{ end }}

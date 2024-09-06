@@ -1,5 +1,5 @@
 baseURL = 'https://example.org/'
-languageCode = 'en-us'
+languageCode = 'en-CH'
 title = 'My New Hugo Site'
 
 [[menus.main]]
@@ -21,3 +21,6 @@ weight = 30
   [module.hugoVersion]
     extended = false
     min = "0.116.0"
+
+[frontmatter]
+  lastmod = [':git', 'lastmod', 'modified', 'date', 'publishdate', 'pubdate', 'published']
