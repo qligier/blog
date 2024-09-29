@@ -1,16 +1,18 @@
 ---
-title: "Beginners guide to Apache Camel and IPF for the Swiss EPR"
-date: 2024-07-14
-draft: true
+title: "Beginner's guide to Apache Camel and IPF for the Swiss EPR"
+date: 2024-09-29
 tags: ['Development', 'IPF', 'Camel', 'Java', 'Swiss EPR']
-description: "The blog post is ."
+description: "The blog post is describing how to start working with IPF and Apache Camel to send your first request 
+to the Swiss EPR."
 ---
 
 ## Introduction
 
 In this article, I will focus on using these libraries with the Spring Boot integration.
-While it is not mandatory to use Spring Boot, it is a good choice, as a lot of features implemented in IPF are
-requiring it.
+While it is not mandatory to use Spring Boot, it is a good choice, as it makes configuring the application much easier.
+IPF provides _starters_ dependencies that will automatically configure the Camel context and the IPF components for you.
+I will present the manual configuration of the Camel context and the IPF components, as it is useful to understand how
+everything works.
 
 ## About Apache Camel
 
@@ -49,7 +51,7 @@ convert it to any type it natively supports for the HTTP transaction.
 This means you can work with any type you will find in the IPF or Husky documentation without having to worry about 
 using the converter.
 
-## About IPF and Husky
+## About IPF
 
 The Open eHealth Integration Platform, commonly known as IPF, is a Java framework that provides an extension to 
 Apache Camel to support common interfaces for health-care related data exchange, mainly around IHE and HL7 
@@ -237,9 +239,11 @@ public class AppConfig {
         final var tlsParameters = this.createAtnaTlsParameters();
         final var auditContext = new DefaultAuditContext();
         auditContext.setTlsParameters(tlsParameters);
-        auditContext.setAuditTransmissionProtocol(new MemoryAuditMessageTransmission(tlsParameters)); // TODO TCP sender
+        auditContext.setAuditTransmissionProtocol(new TLSSyslogSenderImpl(tlsParameters));
         auditContext.setAuditSourceId("1.2.3");
         auditContext.setAuditEnterpriseSiteId("1.2.3");
+        auditContext.setAuditRepositoryHost("arr.example.com");
+        auditContext.setAuditRepositoryPort(514);
         return auditContext;
     }
 
@@ -367,20 +371,44 @@ void addWssHeader(final Message messageOut,
         messageOut.setHeader(AbstractWsEndpoint.OUTGOING_SOAP_HEADERS, soapHeaders);
     }
 
-    final var wssDocument = XmlFactories.newSafeDocumentBuilder().newDocument();
+    final var wssDocument = this.newSafeDocumentBuilder().newDocument();
     wssDocument.appendChild(wssDocument.createElementNS(WSSecurityConstants.WSSE_NS, "Security"));
     wssDocument.getDocumentElement().appendChild(wssDocument.adoptNode(xuaAssertion));
 
     final SoapHeader wssHeader;
     try {
-        wssHeader = new SoapHeader(new QName(WSSecurityConstants.WSSE_NS,
-                                             "Security", WSSecurityConstants.WSSE_PREFIX),
+        wssHeader = new SoapHeader(new QName(WSSecurityConstants.WSSE_NS, "Security", WSSecurityConstants.WSSE_PREFIX),
                                    wssDocument.getDocumentElement());
         wssHeader.setDirection(Header.Direction.DIRECTION_OUT);
         soapHeaders.add(wssHeader);
     } catch (final Exception exception) {
         log.error("Error while creating the outgoing WSS header", exception);
+        // Handle the exception
     }
+}
+
+/**
+ * Initializes and configures a {@link DocumentBuilder} that is not vulnerable to XXE injections (XInclude, Billions
+ * Laugh Attack, ...).
+ *
+ * @return a configured {@link DocumentBuilder}.
+ * @throws ParserConfigurationException if the parser is not Xerces2 compatible.
+ * @see <a
+ * href="https://cheatsheetseries.owasp.org/cheatsheets/XML_External_Entity_Prevention_Cheat_Sheet.html#jaxp-documentbuilderfactory-saxparserfactory-and-dom4j">XML
+ * External Entity Prevention Cheat Sheet</a>
+ */
+DocumentBuilder newSafeDocumentBuilder() throws ParserConfigurationException {
+    final var factory = DocumentBuilderFactory.newDefaultInstance();
+    factory.setNamespaceAware(true);
+    factory.setFeature("http://javax.xml.XMLConstants/feature/secure-processing", true);
+    factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+    factory.setFeature("http://apache.org/xml/features/xinclude", false);
+    factory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+    factory.setXIncludeAware(false);
+    factory.setExpandEntityReferences(false);
+    factory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+    factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
+    return factory.newDocumentBuilder();
 }
 ```
 
