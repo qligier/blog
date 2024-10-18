@@ -214,7 +214,6 @@ public class AppConfig {
 With this example, you can now send a message with the configured mTLS context by referencing it in
 the endpoint URI:
 `pixv3-iti45://www.example.com?secure=true&<strong>sslContextParameters=#eprTlsContext</strong>`.
-{{< code_inline java >}}pixv3-iti45://www.example.com?secure=true&<strong>sslContextParameters=#eprTlsContext</strong>{{< /code_inline >}}.
 For more information, you can refer to the
 ['Web Service Security' IPF documentation](https://oehf.github.io/ipf-docs/docs/ihe/wsSecureTransport#producer).
 
