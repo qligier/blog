@@ -1,5 +1,5 @@
 ---
-title: "From ANSI to QWERTZ: My NuPhy Field75 keyboard customization journey"
+title: "From ANSI to ISO: My NuPhy Field75 keyboard customization journey"
 date: 2024-12-16
 draft: true
 tags: ['']
@@ -20,6 +20,15 @@ Join me as I navigate the complex landscape of keyboard layouts and transform an
 typing companion.
 
 ## The reasons for change
+
+While my Roccat Ryos MK Pro has served me well, it is starting to show its age.
+During my years of use, I have noticed several issues that have prompted me to consider a new keyboard:
+
+- The 100% layout is unnecessarily large and moves the mouse further away. While the numpad is really convenient to 
+  process numbers, I don't use it that often, and I could do with the regular number row.
+- The backlight is starting to fail, more and more keys are not lighting up anymore.
+- The Cherry MX Brown switches are too noisy. While I love their sound and feel, they are not ideal for a shared 
+  office space, for night-late typing sessions, or for video calls.
 
 ## Choosing the NuPhy Field75
 
@@ -42,19 +51,46 @@ beautiful ANSI keyboard.
 While researching my customization options, I found two key paths to explore: visual customization and technical
 mapping.
 
+This keyboard is available with different types of switches.
+To find the right one for me, I ordered the 
+
 ## Layout mapping
 
-ANSI → ISO QWERTZ CH-FR
+At first glance, keyboards might seem uniform.
+But the differences between the ANSI QWERTY (US) and the ISO QWERTZ (Swiss-french) layouts are quite significant.
+Apart from the common alphabet, they present different typing experiences.
+Compared to the ANSI, the ISO has:
+
+- a tall, narrower <kbd>Enter</kbd> key shaped like an inverted L;
+- longer left <kbd>Shift</kbd> key;
+- an additional key between left <kbd>Shift</kbd> and <kbd>Z</kbd>;
+- Accommodation for more diverse language characters, mainly with the <kbd>Alt Gr</kbd> key.
+
+![The ANSI QWERTY layout](KB_United_States.svg "Details of the ANSI QWERTY layout (source: 
+[Wikimedia Commons](https://commons.wikimedia.org/wiki/File:KB_United_States.svg)).")
+
+![The ISO QWERTZ layout](KB_Swiss.svg "Details of the ISO QWERTZ layout (source: 
+[Wikimedia Commons](https://commons.wikimedia.org/wiki/File:KB_Swiss.svg)).")
 
 I also decided to seize the opportunity to customize the layout to better suit my needs.
 There are some specific characters that are quite useful to me, but not present on the layout.
+Part of them are the reason I often have to visit [Copy Paste Character](https://copypastecharacter.com), when I forget
+an [Alt code](https://en.wikipedia.org/wiki/Alt_code).
+Also, without a numpad, I won't be able to enter Alt codes on this new keyboard, so 
 
-https://copypastecharacter.com
+Some of the changes to the layout I wanted are:
 
-* <kbd>AltGr</kbd> + <kbd>Shift</kbd> + <kbd>C</kbd> give **Ç**;
-* <kbd>AltGr</kbd> + <kbd>.</kbd> give **…** (ellipsis);
-* <kbd>AltGr</kbd> + <kbd>space</kbd> give ' ' (no-break space);
-  – — → 
+* <kbd>Alt Gr</kbd> + <kbd>Shift</kbd> + <kbd>C</kbd> give **Ç**;
+* <kbd>Alt Gr</kbd> + <kbd>.</kbd> give **…** (ellipsis);
+* <kbd>Alt Gr</kbd> + <kbd>Space</kbd> give ' ' (no-break space);
+* <kbd>Alt Gr</kbd> + <kbd>Right arrow</kbd> give **→**; the same combination with other arrows.
+* <kbd>Alt Gr</kbd> + <kbd>-</kbd> give **–** (en dash);
+* <kbd>Alt Gr</kbd> + <kbd>Backspace</kbd> is <kbd>Delete</kbd>;
+* <kbd>Fn</kbd> + <kbd>F1-F4</kbd> are sound level/microphone keys;
+
+After multiple rounds of design, here is the final layout I came up with (and ordered):
+
+![The final design of my keycaps](keycaps_design.png "The final design of my keycaps, as ordered.")
 
 ## Technical mapping: Using VIA for layout customization
 
