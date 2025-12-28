@@ -1,0 +1,49 @@
+---
+title: "How to enable YAML validation with JSON Schema in IntelliJ"
+date: 2025-12-28
+draft: true
+tags: ['Software', 'IDE', 'Development']
+description: "The blog post is describing how ."
+---
+
+<p>
+    This is another article about plugin development for IntelliJ-based IDEs.
+    In this article, I am describing how to implement some support for YAML files using a JSON Schema, which is a nifty
+    feature of JetBrains IDEs.
+    It is possible because JSON and YAML are very similar formats, and the JSON Schema standard can be applied to YAML
+    files as well, without many issues.
+</p>
+
+<p>
+    I recently implemented that trick in my plugin
+    <a href="https://github.com/qligier/jetbrains-plugin-fss" title="qligier/jetbrains-plugin-fss: FHIR® and SUSHI Support plugin for JetBrains IDEs">FHIR® and SUSHI Support</a>
+</p>
+
+{{< h2 "Supported features" >}}
+
+<p>
+    The features automatically provided by JetBrains IDEs (at the time of writing) when a JSON Schema is associated with a
+YAML file are:
+</p>
+
+<ul>
+    <li>Autocompletion suggestions based on the schema</li>
+    <li>Validation of values based on the defined type and constraints</li>
+</ul>
+
+<p>
+    Notably, the following features are NOT supported:
+</p>
+
+<ul>
+    <li>Despite setting <code>"additionalProperties": false</code> on an object, extra properties are not marked as errors.</li>
+    <li>Others?</li>
+</ul>
+
+{{< h2 "The implementation" >}}
+{{< h3 "A JSON Schema" >}}
+
+<p>
+    First, we need a JSON Schema to work with.
+    JetBrains IDEs support
+</p>
