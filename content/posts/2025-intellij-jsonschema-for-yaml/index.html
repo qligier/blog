@@ -29,6 +29,8 @@ YAML file are:
 <ul>
     <li>Autocompletion suggestions based on the schema</li>
     <li>Validation of values based on the defined type and constraints</li>
+    <li>`definitions` are properly handled internally;</li>
+    <li>`description` fields are used to annotate the YAML elements;</li>
 </ul>
 
 <p>
@@ -47,3 +49,142 @@ YAML file are:
     First, we need a JSON Schema to work with.
     JetBrains IDEs support
 </p>
+
+{{< h3 "A provider" >}}
+
+<p>
+    Next, we create a new class extending <code>JsonSchemaFileProvider</code> to provide our schema to the IDE.
+    But that interface we are extending is not part of the standard IntelliJ API, but is an additional plugin that we
+    need to declare as a build dependency in the Gradle configuration (despite its name, it's not a module but a plugin):
+</p>
+
+```properties {title="gradle.properties"}
+platformBundledPlugins = com.intellij.modules.json
+```
+
+<p>Or with the regular `gradle.build.kts` file:</p>
+
+```kotlin {title="gradle.build.kts"}
+dependencies {
+    // …
+    // IntelliJ Platform Gradle Plugin Dependencies Extension - read more: https://plugins.jetbrains.com/docs/intellij/tools-intellij-platform-gradle-plugin-dependencies-extension.html
+    intellijPlatform {
+        bundledPlugin("com.intellij.modules.json")
+    }
+}
+```
+
+<p>
+    Now, we can implement our provider:
+</p>
+
+```kotlin {title="MyJsonSchemaProvider.kt"}
+package org.jetbrains.plugins.template
+
+import com.intellij.openapi.vfs.VirtualFile
+import com.jetbrains.jsonSchema.extension.JsonSchemaFileProvider
+import com.jetbrains.jsonSchema.extension.JsonSchemaProviderFactory
+import com.jetbrains.jsonSchema.extension.SchemaType
+import com.jetbrains.jsonSchema.impl.JsonSchemaVersion
+import org.jetbrains.annotations.Nls
+
+class MyJsonSchemaProvider : JsonSchemaFileProvider {
+    override fun isAvailable(file: VirtualFile): Boolean = file.name == "sushi-config.yaml"
+    override fun getName(): @Nls String = "sushi-config.yaml"
+    override fun getSchemaType(): SchemaType = SchemaType.embeddedSchema
+    override fun getSchemaVersion(): JsonSchemaVersion = JsonSchemaVersion.SCHEMA_2020_12
+    override fun getSchemaFile(): VirtualFile? =
+        JsonSchemaProviderFactory.getResourceFile(javaClass, "/schema.json")
+}
+```
+
+<p>The following methods are implemented:</p>
+
+<ul>
+    <li>
+        `isAvailable(VirtualFile)`: the IDE will query this method with the file for which it wants to determine if
+        the JSON Schema applies or not. In this example, I simply check if the file name is `sushi-config.yaml`.
+    </li>
+    <li>`getName()`: returns the name of the schema.</li>
+    <li>`getSchemaType()`: ?</li>
+    <li>`getSchemaVersion` (optional): the JSON Schema version that is implemented.</li>
+    <li>
+        `getSchemaFile()`: returns the schema file as a `VirtualFile`. In this example, I am loading it from the plugin
+        resources (meaning the file is at `my-plugin/src/main/resources/schema.json`). There's a nice utility method to
+        load a resource as a `VirtualFile` in
+        {{< a/ext "https://github.com/JetBrains/intellij-community/blob/master/json/backend/src/com/jetbrains/jsonSchema/extension/JsonSchemaProviderFactory.java" "JsonSchemaProviderFactory" >}}.
+    </li>
+</ul>
+
+<p>The next step is to create a factory for our provider. This is really straightforward:</p>
+
+```kotlin {title="MyJsonSchemaProviderFactory.kt"}
+package org.jetbrains.plugins.template
+
+import com.intellij.openapi.project.Project
+import com.jetbrains.jsonSchema.extension.JsonSchemaFileProvider
+import com.jetbrains.jsonSchema.extension.JsonSchemaProviderFactory
+
+class MyJsonSchemaProviderFactory : JsonSchemaProviderFactory {
+    override fun getProviders(project: Project): List<JsonSchemaFileProvider> = listOf(MyJsonSchemaProvider())
+}
+```
+<!-- </JsonSchemaFileProvider> -->
+
+{{< h3 "A registration" >}}
+
+<p>
+    The last step is to register our factory in the plugin configuration file, and declare a runtime dependency on the
+    JSON plugin.
+    Since it's a plugin, it could be unavailable at runtime, and IntelliJ offers us two choices to deal with that:
+</p>
+
+<ol>
+    <li>refuse to load our plugin, because we require the JSON plugin;</li>
+    <li>continue to load our plugin, but disable that feature.</li>
+</ol>
+
+<p>
+    Which solution to implement depends on the context of the developed plugin.
+    At the time of writing, I am unable to disable the JSON plugin in my IDEs, so I am unsure if that situation is
+    really possible, but I choose the second solution for my plugin – better safe than sorry.
+    The first solution is simply implemented by declaring a mandatory dependency on the JSON plugin:
+</p>
+```xml {title="plugin.xml (mandatory dependency)"}
+<!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
+<idea-plugin>
+    <id>org.jetbrains.plugins.template</id>
+    <name>IntelliJ Platform Plugin Template</name>
+    <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.modules.json</depends>
+    <extensions defaultExtensionNs="com.intellij">
+        <!-- Other extensions… -->
+    </extensions>
+    <extensions defaultExtensionNs="JavaScript.JsonSchema">
+        <ProviderFactory implementation="org.jetbrains.plugins.template.MyJsonSchemaProviderFactory"/>
+    </extensions>
+</idea-plugin>
+```
+
+<p>
+    The second solution is implemented by declaring a optional dependency on the JSON plugin, and creating a second
+    plugin configuration file that is only loaded when the JSON plugin is available.
+    You can name it as you want.
+</p>
+```xml {title="plugin.xml (optional dependency)"}
+<idea-plugin>
+    <id>org.jetbrains.plugins.template</id>
+    <name>IntelliJ Platform Plugin Template</name>
+    <depends>com.intellij.modules.platform</depends>
+    <depends optional="false" config-file="plugin_with_json.xml">com.intellij.modules.json</depends>
+</idea-plugin>
+```
+
+```xml {title="plugin_with_json.xml (optional dependency)"}
+<idea-plugin>
+    <extensions defaultExtensionNs="JavaScript.JsonSchema">
+        <ProviderFactory
+                implementation="ch.qligier.jetbrains.plugin.fss.sushiconfig.SushiConfigSchemaProviderFactory"/>
+    </extensions>
+</idea-plugin>
+```
