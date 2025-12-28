@@ -29,9 +29,10 @@ jobs:
       - name: Install Dart Sass
         run: sudo snap install dart-sass
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
+          persist-credentials: false
 
       - name: Setup Hugo
         uses: peaceiris/actions-hugo@v3
@@ -60,7 +61,7 @@ jobs:
           npx @divriots/jampack ./public
 
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v4
         with:
           path: ./public
 

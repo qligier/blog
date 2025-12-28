@@ -2,11 +2,11 @@ baseURL = 'https://blog.qligier.ch/'
 languageCode = 'en-us'
 title = "Quentin's blog"
 theme = 'qblog'
-copyright = '© 2024 Quentin Ligier'
+copyright = '© 2025 Quentin Ligier'
 
 [params]
   description = 'The personal blog of Quentin Ligier'
-  copyright = '© 2024 Quentin Ligier'
+  copyright = '© 2025 Quentin Ligier'
   [params.author]
     name = 'Quentin Ligier'
 
@@ -27,7 +27,7 @@ copyright = '© 2024 Quentin Ligier'
     disable = true
   [privacy.instagram]
     disable = true
-  [privacy.twitter]
+  [privacy.x]
     disable = true
   [privacy.vimeo]
     disable = true
