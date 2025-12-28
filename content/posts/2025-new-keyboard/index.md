@@ -188,7 +188,7 @@ It should still be helpful in a dark room, as the keycaps don't fully block the 
 
 Changing my typing habits from the ISO Swiss-French layout to the ANSI layout is not that hard for the most part.
 Keys are mainly in the same place, and the differences are not that big, so I can write text almost as fast as before.
-The biggest change is the <kbd><</kbd> key, which is now between <kbd>Backspace</kbd> and <kbd>Enter</kbd>; I often 
+The biggest change is the <kbd>&lt;</kbd> key, which is now between <kbd>Backspace</kbd> and <kbd>Enter</kbd>; I often 
 use it involuntarily, but I'm getting used to it.
 
 Coding with it is a bit more difficult though, because it requires more special characters that have changed place, 
