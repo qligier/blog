@@ -1,6 +1,6 @@
 ---
 title: "How I migrated my emails from Infomaniak to Fastmail"
-date: 205-12-13
+date: 2025-12-28
 draft: true
 tags: ['Email']
 description: "The blog post is describing ."
