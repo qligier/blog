@@ -1,4 +1,4 @@
-@import "variables";
+@use "variables";
 
 $blue1: #0099b6;
 $green1: #71aa00;
@@ -19,7 +19,7 @@ $black1: #333;
 /* Keyword */ .chroma .k { color: $blue1 }
 /* KeywordConstant */ .chroma .kc { color: $blue1 }
 /* KeywordDeclaration */ .chroma .kd { color: $blue1 }
-/* KeywordNamespace */ .chroma .kn { color: $red-primary }
+/* KeywordNamespace */ .chroma .kn { color: variables.$red-primary }
 /* KeywordPseudo */ .chroma .kp { color: $blue1 }
 /* KeywordReserved */ .chroma .kr { color: $blue1 }
 /* KeywordType */ .chroma .kt { color: $blue1 }
@@ -38,7 +38,7 @@ $black1: #333;
 /* NameNamespace */ .chroma .nn { color: $black1 }
 /* NameOther */ .chroma .nx { color: $green1 }
 /* NameProperty */ .chroma .py { color: $black1 }
-/* NameTag */ .chroma .nt { color: $red-primary }
+/* NameTag */ .chroma .nt { color: variables.$red-primary }
 /* NameVariable */ .chroma .nv { color: $black1 }
 /* NameVariableClass */ .chroma .vc { color: $black1 }
 /* NameVariableGlobal */ .chroma .vg { color: $black1 }
@@ -67,8 +67,8 @@ $black1: #333;
 /* LiteralNumberInteger */ .chroma .mi { color: #ae81ff }
 /* LiteralNumberIntegerLong */ .chroma .il { color: #ae81ff }
 /* LiteralNumberOct */ .chroma .mo { color: #ae81ff }
-/* Operator */ .chroma .o { color: $red-primary }
-/* OperatorWord */ .chroma .ow { color: $red-primary }
+/* Operator */ .chroma .o { color: variables.$red-primary }
+/* OperatorWord */ .chroma .ow { color: variables.$red-primary }
 /* Punctuation */ .chroma .p { color: $black1 }
 /* Comment */ .chroma .c { color: #75715e }
 /* CommentHashbang */ .chroma .ch { color: #75715e }

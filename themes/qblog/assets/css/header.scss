@@ -1,12 +1,12 @@
-@import "variables";
+@use "variables";
 
 body > header {
-    background: $blue-primary;
-    color: $white-primary;
-    height: $header-height;
+    background: variables.$blue-primary;
+    color: variables.$white-primary;
+    height: variables.$header-height;
 
     .container {
-        max-width: $max-width;
+        max-width: variables.$max-width;
         margin: 0 auto;
         text-align: center;
     }
@@ -51,7 +51,7 @@ body > header {
     .separator {
         display: inline-block;
         margin: 0 10px;
-        background: $red-primary;
+        background: variables.$red-primary;
         width: 50px;
         height: 3px;
     }

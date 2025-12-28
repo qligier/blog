@@ -1,4 +1,4 @@
-@import "variables";
+@use "variables";
 
 .post {
     $line-height: 19.5px;
@@ -6,13 +6,13 @@
         background: #eceff4;
         padding: 2px 4px;
         border-radius: 4px;
-        color: $dark4;
+        color: variables.$dark4;
         font-family: courier, monospace;
     }
 
     .qcode {
         $negative-margin: 20px;
-        border: 1px solid $main-border-color;
+        border: 1px solid variables.$main-border-color;
         background: #f9fafb;
         margin: 2em #{-$negative-margin};
         padding: 0;
@@ -21,7 +21,7 @@
         overflow-x: auto;
 
         header {
-            border-bottom: 1px solid $main-border-color;
+            border-bottom: 1px solid variables.$main-border-color;
             padding: 10px 20px;
             background: #f1f3f6;
             font-size: 1.1em;
@@ -49,7 +49,7 @@
         }
         .lnt {
             color: #b0b7c6;
-            font-family: $font-family-sans-serif;
+            font-family: variables.$font-family-sans-serif;
             font-size: 13px;
             display: block;
             line-height: $line-height;
@@ -81,7 +81,7 @@
         display: table;
         margin: 2em auto;
         img {
-            box-shadow: 0 0 20px 0 $white2;
+            box-shadow: 0 0 20px 0 variables.$white2;
         }
         figcaption {
             margin-top: 5px;
@@ -91,9 +91,9 @@
     }
 
     .footnotes {
-        margin: $main-padding #{-$main-padding} 0;
-        padding: $main-padding $main-padding 0;
-        border-top: 1px solid $main-border-color;
+        margin: variables.$main-padding #{-#{variables.$main-padding}} 0;
+        padding: variables.$main-padding variables.$main-padding 0;
+        border-top: 1px solid variables.$main-border-color;
         counter-reset: counter-footnotes;
         list-style-type: none;
         li {
@@ -171,20 +171,20 @@
             li {
                 margin-bottom: 0.4em;
                 padding-left: 5px;
-                color: $blue-primary;
+                color: variables.$blue-primary;
             }
         }
 
         & > ul {
             // First level of titles (h2)
             position: absolute;
-            left: calc(100% + $main-padding);
+            left: calc(100% + #{variables.$main-padding});
             top: 0;
             width: 230px;
             background: #f4f5f7;
-            border-top: 1px solid $main-border-color;
-            border-right: 1px solid $main-border-color;
-            border-bottom: 1px solid $main-border-color;
+            border-top: 1px solid variables.$main-border-color;
+            border-right: 1px solid variables.$main-border-color;
+            border-bottom: 1px solid variables.$main-border-color;
             border-left: 1px solid #e8eef9;
             border-top-right-radius: 1em;
             border-bottom-right-radius: 1em;

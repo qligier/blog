@@ -1,6 +1,12 @@
-@import "reset";
-@import "variables";
-@import "open-sans";
+@use "reset";
+@use "variables";
+@use "open-sans";
+
+@use "header";
+@use "home";
+@use "single";
+@use "highlight";
+@use "footer";
 
 html,
 body {
@@ -10,23 +16,23 @@ body {
     padding: 0;
 }
 body {
-    color: $black-primary;
-    font-family: $font-family-sans-serif;
+    color: variables.$black-primary;
+    font-family: variables.$font-family-sans-serif;
     font-size: 14px;
     line-height: 1.5;
-    background: $white1;
+    background: variables.$white1;
 }
 main {
-    min-height: calc(100vh - #{$header-height + $footer-height});
+    min-height: calc(100vh - #{variables.$header-height + variables.$footer-height});
     margin: 0 auto;
-    max-width: $max-width;
+    max-width: variables.$max-width;
     color: #4b505a;
     position: relative;
 
     a {
-        color: $red-primary;
+        color: variables.$red-primary;
         &:visited {
-            color: $red-primary;
+            color: variables.$red-primary;
         }
     }
 
@@ -40,33 +46,33 @@ main {
             display: block;
             margin-top: 10px;
             width: 40px;
-            border-bottom: 3px solid $red-primary;
+            border-bottom: 3px solid variables.$red-primary;
         }
     }
 
     h2, h3 {
         a,
         a:visited {
-            color: $white3;
+            color: variables.$white3;
             margin-left: 5px;
             transition: color 0.15s ease-in-out;
         }
         &:hover {
             a,
             a:visited {
-                color: $red-primary;
+                color: variables.$red-primary;
             }
         }
     }
 }
 #body {
-    min-height: calc(100vh - #{$header-height + $footer-height});
+    min-height: calc(100vh - #{variables.$header-height + variables.$footer-height});
     width: 100%;
     display: inline-block;
     background: #fff;
-    padding: $main-padding;
-    border-left: 1px solid $main-border-color;
-    border-right: 1px solid $main-border-color;
+    padding: variables.$main-padding;
+    border-left: 1px solid variables.$main-border-color;
+    border-right: 1px solid variables.$main-border-color;
 
     & > *:first-child {
         margin-top: 0;
@@ -109,20 +115,20 @@ ul.posts {
 
     a {
         display: inline-block;
-        border: 1px solid $main-border-color;
+        border: 1px solid variables.$main-border-color;
         border-radius: 4px;
         padding: 5px 10px;
-        color: $blue-primary;
+        color: variables.$blue-primary;
         line-height: 24px;
 
         &:visited {
-            color: $blue-primary;
+            color: variables.$blue-primary;
         }
         &:hover {
-            background-color: $blue-primary;
+            background-color: variables.$blue-primary;
             color: #fff;
             text-decoration: none;
-            box-shadow: 0 0 10px 0 $white2;
+            box-shadow: 0 0 10px 0 variables.$white2;
 
             svg {
                 fill: #fff;
@@ -131,7 +137,7 @@ ul.posts {
     }
     svg {
         vertical-align: middle;
-        fill: $blue-primary;
+        fill: variables.$blue-primary;
         margin-right: 5px;
     }
 }
@@ -150,9 +156,3 @@ kbd {
     padding: 1px 4px;
     white-space: nowrap;
 }
-
-@import "header";
-@import "home";
-@import "single";
-@import "highlight";
-@import "footer";

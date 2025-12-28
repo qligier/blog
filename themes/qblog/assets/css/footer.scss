@@ -1,14 +1,14 @@
 @use 'sass:color';
-@import "variables";
+@use "variables";
 
 footer {
-    background: $black-primary;
+    background: variables.$black-primary;
     color: #d2d2d2;
-    height: $footer-height;
+    height: variables.$footer-height;
     padding: 10px 0;
 
     .container {
-        max-width: $max-width;
+        max-width: variables.$max-width;
         padding: 10px 0 0;
         margin: 0 auto;
         display: flex;
