@@ -1,5 +1,5 @@
 ---
-title: "How to enable YAML validation with JSON Schema in IntelliJ"
+title: "How to enable JSON or YAML validation with JSON Schemas in IntelliJ"
 date: 2025-12-28
 draft: true
 tags: ['Software', 'IDE', 'Development']
@@ -8,29 +8,41 @@ description: "The blog post is describing how ."
 
 <p>
     This is another article about plugin development for IntelliJ-based IDEs.
-    In this article, I am describing how to implement some support for YAML files using a JSON Schema, which is a nifty
-    feature of JetBrains IDEs.
-    It is possible because JSON and YAML are very similar formats, and the JSON Schema standard can be applied to YAML
-    files as well, without many issues.
+    In this article, I am describing how to implement some support for JSON or YAML files using a JSON Schema.
+    While the JSON support is expected, the YAML support is a bit more surprising.
+    It is possible because JSON and YAML are very similar formats, YAML 1.2 even being a superset of JSON.
 </p>
 
 <p>
     I recently implemented that trick in my plugin
-    <a href="https://github.com/qligier/jetbrains-plugin-fss" title="qligier/jetbrains-plugin-fss: FHIR® and SUSHI Support plugin for JetBrains IDEs">FHIR® and SUSHI Support</a>
+    {{< a/ext "https://github.com/qligier/jetbrains-plugin-fss" "FHIR® and SUSHI Support" >}} to provide a better
+    experience while working with a specific YAML file (the <code>sushi-config.yaml</code> file).
+    I discovered that neat feature in the
+    {{< a/ext "https://www.jetbrains.com/help/idea/yaml.html#json_schema" "YAML documentation" >}}, but I had to use the
+    {{< a/ext "https://plugins.jetbrains.com/intellij-platform-explorer/extensions?extensions=JavaScript.JsonSchema.ProviderFactory" "IntelliJ Platform Explorer" >}}
+    to discover how a plugin could register a new JSON Schema in the IDE.
+    That topic isn't covered by the
+    {{< a/ext "https://plugins.jetbrains.com/docs/intellij/welcome.html" "IntelliJ Platform SDK Documentation" >}}
+    documentation, so I am sharing my findings here.
 </p>
 
 {{< h2 "Supported features" >}}
 
 <p>
-    The features automatically provided by JetBrains IDEs (at the time of writing) when a JSON Schema is associated with a
-YAML file are:
+    The features automatically provided by the IntelliJ SDK (at the time of writing) when a JSON Schema is enabled are:
 </p>
 
 <ul>
     <li>Autocompletion suggestions based on the schema</li>
     <li>Validation of values based on the defined type and constraints</li>
-    <li>`definitions` are properly handled internally;</li>
-    <li>`description` fields are used to annotate the YAML elements;</li>
+    <li><code>description</code> fields are used to annotate the YAML elements;</li>
+    <li>
+        <code></code> is properly
+        enforced;
+    </li>
+    <li>
+        <code>definitions</code> are properly handled internally;
+    </li>
 </ul>
 
 <p>
@@ -38,16 +50,36 @@ YAML file are:
 </p>
 
 <ul>
-    <li>Despite setting <code>"additionalProperties": false</code> on an object, extra properties are not marked as errors.</li>
+    <li>
+        Despite setting
+        <code>{{< a/ext "https://json-schema.org/understanding-json-schema/reference/object#additionalproperties" "additionalProperties" >}}</code>
+        on an object, extra properties are not marked as errors.
+    </li>
     <li>Others?</li>
 </ul>
 
 {{< h2 "The implementation" >}}
+
+<p>
+    Let's go into the implementation details.
+    For these examples, I am using the
+    {{< a/ext "https://github.com/JetBrains/intellij-platform-plugin-template" "IntelliJ Platform Plugin Template" >}},
+    but your plugin structure may differ slightly.
+</p>
+
 {{< h3 "A JSON Schema" >}}
 
 <p>
     First, we need a JSON Schema to work with.
-    JetBrains IDEs support
+    Creating a JSON Schema is out of the scope of this article, but there are many resources online to help with that,
+    and I found it rather easy to write one manually.
+    I'm also sure there are good tools with graphical interfaces to help visualizing and editing the schemas.
+</p>
+
+<p>
+    Once you have your schema, you need to add it to your plugin resources.
+    In the plugin template structure, that would be under <em>my-plugin/src/main/resources/</em>.
+    For this example, I simply named my schema file <code>schema.json</code>.
 </p>
 
 {{< h3 "A provider" >}}
@@ -90,7 +122,7 @@ import org.jetbrains.annotations.Nls
 
 class MyJsonSchemaProvider : JsonSchemaFileProvider {
     override fun isAvailable(file: VirtualFile): Boolean = file.name == "sushi-config.yaml"
-    override fun getName(): @Nls String = "sushi-config.yaml"
+    override fun getName(): @Nls String = "sushi-config.yaml schema"
     override fun getSchemaType(): SchemaType = SchemaType.embeddedSchema
     override fun getSchemaVersion(): JsonSchemaVersion = JsonSchemaVersion.SCHEMA_2020_12
     override fun getSchemaFile(): VirtualFile? =
@@ -102,16 +134,20 @@ class MyJsonSchemaProvider : JsonSchemaFileProvider {
 
 <ul>
     <li>
-        `isAvailable(VirtualFile)`: the IDE will query this method with the file for which it wants to determine if
-        the JSON Schema applies or not. In this example, I simply check if the file name is `sushi-config.yaml`.
+        <code>isAvailable(VirtualFile)</code>: the IDE will query this method with the file for which it wants to
+        determine if the JSON Schema applies or not. In this example, I simply check if the file name is
+        <code>sushi-config.yaml</code>.
     </li>
-    <li>`getName()`: returns the name of the schema.</li>
-    <li>`getSchemaType()`: ?</li>
-    <li>`getSchemaVersion` (optional): the JSON Schema version that is implemented.</li>
+    <li><code>getName()</code>: returns the name of the schema, and will be displayed in the IDE.</li>
+    <li><code>getSchemaType()</code>: ?</li>
     <li>
-        `getSchemaFile()`: returns the schema file as a `VirtualFile`. In this example, I am loading it from the plugin
-        resources (meaning the file is at `my-plugin/src/main/resources/schema.json`). There's a nice utility method to
-        load a resource as a `VirtualFile` in
+        <code>getSchemaVersion()</code> (optional): the JSON Schema version that is implemented. I'm not sure if there's
+        any reason to stick with an older version than <code>2020-12</code>, unless you're dealing with legacy schemas.
+    </li>
+    <li>
+        <code>getSchemaFile()</code>: returns the schema file as a <code>VirtualFile</code>. In this example, I am
+        loading it from the plugin resources (meaning the file is at <em>my-plugin/src/main/resources/schema.json</em>).
+        There's a nice utility method to load a resource as a <code>VirtualFile</code> in
         {{< a/ext "https://github.com/JetBrains/intellij-community/blob/master/json/backend/src/com/jetbrains/jsonSchema/extension/JsonSchemaProviderFactory.java" "JsonSchemaProviderFactory" >}}.
     </li>
 </ul>
@@ -171,6 +207,7 @@ class MyJsonSchemaProviderFactory : JsonSchemaProviderFactory {
     plugin configuration file that is only loaded when the JSON plugin is available.
     You can name it as you want.
 </p>
+
 ```xml {title="plugin.xml (optional dependency)"}
 <idea-plugin>
     <id>org.jetbrains.plugins.template</id>
@@ -188,3 +225,9 @@ class MyJsonSchemaProviderFactory : JsonSchemaProviderFactory {
     </extensions>
 </idea-plugin>
 ```
+
+{{< h2 "Supported features" >}}
+
+<p>
+    That's it,
+</p>
