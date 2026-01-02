@@ -25,27 +25,105 @@ description: "."
 
 {{< h3 "Basic completion" >}}
 
+<p>
+    Basic code completion is the fundamental feature you likely use constantly without thinking about it.
+    It suggests names of classes, methods, fields, and keywords within the visibility scope.
+    IntelliJ IDEA analyzes the context to suggest the most relevant options first.
+    While it is usually triggered automatically as you type, you can also invoke it manually by pressing
+    <kbd>Ctrl</kbd>+<kbd>Space</kbd>.
+</p>
+
 {{< h2 "Live Templates" >}}
 
-https://www.jetbrains.com/help/idea/using-live-templates.html
+<p>
+    Live Templates in IntelliJ IDEA are essentially smart code snippets that allow you to insert common code constructs
+    by typing a short abbreviation and pressing a specific expansion key (usually <kbd>Tab</kbd>).
+    They are designed to eliminate repetitive typing and ensure consistency.
+    For instance, typing <code>sout</code> in a Java file and pressing <kbd>Tab</kbd> instantly expands to
+    <code>System.out.println();</code>, placing your cursor right between the parentheses.
+</p>
 
 <p>
-    Live templates are a great way to speed up development.
+    These templates go beyond static text replacement. They support variables and placeholders, allowing you to
+    navigate through specific parts of the code snippet using <kbd>Tab</kbd>.
+    IntelliJ IDEA comes with a rich set of predefined variables (like the current class name, method parameters, or
+    clipboard content) and supports complex expressions, making the templates dynamic and context-aware.
+</p>
 
+<p>
+    If you are familiar with <strong>Visual Studio Code</strong>, you will recognize Live Templates as the direct equivalent
+    of {{< a/ext "https://code.visualstudio.com/docs/editing/userdefinedsnippets" "Snippets" >}}.
+    Both features share the same goal and mechanics: abbreviation-based expansion, tab stops, and variable interpolation.
+    Similarly, <strong>Eclipse</strong> users know this feature simply as
+    {{< a/ext "https://mcuoneclipse.com/2013/03/04/editor-templates-in-eclipse/" "Templates" >}}.
+    While the syntax for defining custom templates varies between these tools, the workflow is identical.
+    For more details, you can refer to the
+    {{< a/ext "https://www.jetbrains.com/help/idea/using-live-templates.html" "official documentation" >}}.
+</p>
+
+<p>
     Live templates are available in different scopes:
 </p>
 
 <ul>
-    <li><strong>Simple</strong>: </li>
-    <li><strong>Parameterized</strong>: </li>
-    <li><strong>Surround</strong>: </li>
+    <li>
+        <strong>Simple</strong>: these templates expand into a fixed block of code or text.
+        They are useful for inserting standard boilerplate code that doesn't require any dynamic input (like a logger).
+    </li>
+    <li>
+        <strong>Parameterized</strong>: These templates contain variables that enable user input.
+        When expanded, the cursor jumps to the first variable, allowing you to type a value.
+        Pressing <kbd>Tab</kbd> moves to the next variable.
+        Variables can also be calculated automatically using predefined functions, or even custom Groovy scripts, which
+        allows for quite complex templates.
+    </li>
+    <li>
+        <strong>Surround</strong>: These templates are designed to wrap a block of selected code.
+        You select a piece of code, press <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>J</kbd> (or
+        <kbd>Cmd</kbd>+<kbd>Option</kbd>+<kbd>J</kbd> on macOS), and choose a template (like <code>if</code>,
+        <code>try/catch</code>, or <code>for</code>) to enclose the selection.
+    </li>
 </ul>
 
 {{< h2 "Postfix Completion" >}}
 
-https://www.jetbrains.com/help/idea/auto-completing-code.html#postfix_completion
+<p>
+    Postfix completion is similar to Live Templates in that it expands a short abbreviation into a larger code block.
+    However, the key difference lies in how they are triggered: while you write a keyword and expand it forward with Live
+    Templates, Postfix Completion works backward on an already typed expression, which is usually code that will be kept).
+    This is particularly useful when you have already typed an expression and realize you need to wrap it in a construct
+    like an <code>if</code> statement or a loop.
+</p>
+
+<p>
+    Instead of moving your caret back to the beginning of the line (which breaks your flow), you simply append a dot
+    <code>.</code> and the template name to the expression.
+    For example, typing <code>isValid.if</code> and pressing <kbd>Tab</kbd> transforms the code just like a Surround Live Template would,
+    but without the need to select text first.
+    The downside is that Postfix Completions are less flexible than Live Templates, as they can't include variables or complex logic.
+</p>
+
+<p>
+    You can explore all pre-configured postfix templates in the settings under
+    <code>Editor | General | Postfix Completion</code>, and read more about them in the
+    {{< a/ext "https://www.jetbrains.com/help/idea/postfix-code-completion.html" "official documentation" >}}.
+</p>
 
 {{< h2 "Structural Search and Replace" >}}
+
+<p>
+    Structural Search and Replace (SSR) is one of the most powerful, yet underutilized, features in IntelliJ IDEA.
+    Unlike a standard text search, SSR understands the grammatical structure of your code.
+    This allows you to search for code patterns rather than specific text strings.
+</p>
+
+<p>
+    For example, you can search for all <code>try-catch</code> blocks where the catch block is empty, regardless of
+    formatting or variable names.
+    You can then use the "Replace" functionality to refactor these patterns, such as adding a logger call to every
+    empty catch block.
+    This feature is invaluable for large-scale refactoring and enforcing coding standards across a project.
+</p>
 
 {{< h2 "Getter, Setter, HashCode, Equals and ToString Generation" >}}
 
@@ -58,8 +136,8 @@ https://www.jetbrains.com/help/idea/auto-completing-code.html#postfix_completion
 </p>
 
 <p>
-    To generate getters and setters, you can use the <kbd>Alt</kbd> + <kbd>Insert</kbd> shortcut, or right-click on the
-    class and select <code>Generate...</code>.
+    To generate getters and setters, you can use the <kbd>Alt</kbd>+<kbd>Insert</kbd> shortcut, or right-click on the
+    class and select <code>Generate…</code>.
 </p>
 
 TODO screenshot
@@ -68,21 +146,24 @@ TODO screenshot
     The final generation feature is the <code>toString()</code> method.
     It is very useful to have a readable representation of your objects, especially when debugging.
     Intellij IDEA can generate a <code>toString()</code> method for you, based on the fields you select.
-    Lombok
 </p>
 
-Again, you can use the <kbd>Alt</kbd> +
-<kbd>Insert</kbd> shortcut, or right-click on the class and select <code>Generate...</code>.
+<p>
+    Again, you can use the <kbd>Alt</kbd>+<kbd>Insert</kbd> shortcut, or right-click on the class and select <code>Generate…</code>.
+</p>
 
-{{< h2 "Comparison with Project Lombok" >}}
+{{< h3 "Comparison with Project Lombok" >}}
 
-<em>{{< a/ext "https://projectlombok.org" "Project Lombok" >}}</em> (or simply <em>Lombok</em>) is a very popular library that provides generation abilities
-similar to the ones described above (getters, setters, toString, equals, hashCode).
-It is very useful to avoid writing boilerplate code, but it
+<p>
+    <em>{{< a/ext "https://projectlombok.org" "Project Lombok" >}}</em> (or simply <em>Lombok</em>) is a very popular library
+    that provides generation abilities similar to the ones described above (getters, setters, toString, equals, hashCode).
+    It is very useful to avoid writing boilerplate code, but it comes with its own set of trade-offs.
+</p>
 
 <p>
     Its main advantage is that it generates code at compile time, meaning that the generated code will always be
-    up-to-date with the fields of your class.
+    up-to-date with the fields of your class; the code generated by IntelliJ IDEA is static and needs to be regenerated
+    when the class changes.
 </p>
 
 <p>
@@ -107,5 +188,5 @@ It is very useful to avoid writing boilerplate code, but it
     I generally use Lombok in the development phase of a project, which saves me a lot of time writing that kind of
     boilerplate code.
     Then, when the project becomes more stable, I remove Lombok and replace it with the Intellij IDEA-generated code.
-    This
+    This approach gives me the best of both worlds: rapid development initially, and a dependency-free, explicit codebase in the long run.
 </p>
