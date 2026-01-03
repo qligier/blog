@@ -2,8 +2,9 @@
 
 .post {
     $line-height: 19.5px;
+
     code {
-        background: #eceff4;
+        background: #f3f5f9;
         padding: 2px 4px;
         border-radius: 4px;
         color: variables.$dark4;
@@ -32,20 +33,24 @@
                 margin-right: 20px;
             }
         }
+
         & > pre {
             // For simple code blocks, not syntax highlighted
             padding: 3px 6px;
         }
+
         code {
             background: none;
             padding: 0;
             border-radius: 0;
             line-height: $line-height;
         }
+
         table {
             width: 100%;
             margin: 10px 0;
         }
+
         .lnt {
             color: #b0b7c6;
             font-family: variables.$font-family-sans-serif;
@@ -53,21 +58,33 @@
             display: block;
             line-height: $line-height;
         }
+
         pre {
             margin: 0;
         }
+
         .lnt {
             border-left: 2px solid #f9fafb;
         }
+
         .hl > .lnt {
             border-left: 2px solid #5596e6;
         }
+
         .hl > .lnt,
         .line.hl {
             background: #dde9f6;
         }
-        .chroma .lnt {
-            margin-right: 0;
+
+        .chroma {
+            padding-right: 1em;
+
+            .lnt {
+                margin-right: 0;
+            }
+        }
+
+        div.highlight {
         }
     }
 
@@ -80,9 +97,11 @@
     figure {
         display: table;
         margin: 2em auto;
+
         img {
             box-shadow: 0 0 20px 0 variables.$white2;
         }
+
         figcaption {
             margin-top: 5px;
             text-align: center;
@@ -96,14 +115,17 @@
         border-top: 1px solid variables.$main-border-color;
         counter-reset: counter-footnotes;
         list-style-type: none;
+
         li {
             margin-bottom: 2px;
+
             &::before {
                 content: 'Footnote ' counter(counter-footnotes, decimal) ': ';
                 counter-increment: counter-footnotes;
                 font-size: 12px;
                 color: #3b566a;
             }
+
             &:target {
                 background-color: #ffffcc;
             }
@@ -136,11 +158,13 @@
         tr {
             border-bottom: 1px solid;
         }
+
         th,
         td {
             border: 1px solid lightgrey;
             padding: 0.25rem 0.75rem;
         }
+
         thead {
             border-bottom: 2px solid #a2a6af;
             background: whitesmoke;
