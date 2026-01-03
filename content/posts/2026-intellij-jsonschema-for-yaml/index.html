@@ -1,9 +1,10 @@
 ---
 title: "How to enable JSON or YAML validation with JSON Schemas in IntelliJ"
-date: 2025-12-28
-draft: true
+date: 2026-01-03
+draft: false
 tags: ['Software', 'IDE', 'Development']
-description: "The blog post is describing how ."
+description: "The blog post is describing how to add support for specific JSON or YAML files in JetBrains IDEs from a
+JSON Schema, quickly implementing some validation, annotation, code completion and other features."
 ---
 
 <p>
@@ -33,15 +34,19 @@ description: "The blog post is describing how ."
 </p>
 
 <ul>
-    <li>Autocompletion suggestions based on the schema</li>
-    <li>Validation of values based on the defined type and constraints</li>
+    <li>Autocompletion suggestions based on the schema;</li>
+    <li>Validation of values based on the defined type and constraints;</li>
     <li><code>description</code> fields are used to annotate the YAML elements;</li>
     <li>
-        <code></code> is properly
-        enforced;
+        the <code>{{< a/ext "https://json-schema.org/understanding-json-schema/reference/type" "types" >}}</code> are
+        properly enforced;
     </li>
     <li>
-        <code>definitions</code> are properly handled internally;
+        <code>definitions</code> are properly handled internally, meaning the SDK is able to follow references;
+    </li>
+    <li>
+        For {{< a/ext "https://json-schema.org/understanding-json-schema/reference/object" "objects" >}},
+        <code>properties</code>, <code>minProperties</code> and <code>maxProperties</code> are supported.
     </li>
 </ul>
 
@@ -53,10 +58,27 @@ description: "The blog post is describing how ."
     <li>
         Despite setting
         <code>{{< a/ext "https://json-schema.org/understanding-json-schema/reference/object#additionalproperties" "additionalProperties" >}}</code>
-        on an object, extra properties are not marked as errors.
+        on an object, extra properties are not marked as errors;
     </li>
-    <li>Others?</li>
+    <li>
+        In arrays, <code>uniqueItems</code>, <code>minItems</code> and <code>maxItems</code> are not enforced (despite
+        the object's equivalent <code>minProperties</code> and <code>maxProperties</code> being supported);
+    </li>
 </ul>
+
+<p>
+    There are many other features of JSON Schema that I did not test, so this list is not exhaustive.
+    Overall, the support is good enough to provide a nice assistance to the user, because it's tightly integrated
+    into the IDE.
+    But if you're looking to perform a full validation of files against a JSON Schema, you may want to consider
+    alternative implementations, because of the missing features listed above.
+</p>
+
+<p>
+    For my plugin, I wanted to provide a better experience when editing the <code>sushi-config.yaml</code> file, not a
+    full validation, so I'm satisfied with the current state of the support.
+    Let's proceed to the implementation!
+</p>
 
 {{< h2 "The implementation" >}}
 
@@ -65,6 +87,11 @@ description: "The blog post is describing how ."
     For these examples, I am using the
     {{< a/ext "https://github.com/JetBrains/intellij-platform-plugin-template" "IntelliJ Platform Plugin Template" >}},
     but your plugin structure may differ slightly.
+</p>
+
+<p>
+    The implementation is straightforward, and requires three main steps: a JSON Schema, a provider class with its
+    factory, and a registration in the plugin configuration file.
 </p>
 
 {{< h3 "A JSON Schema" >}}
@@ -94,7 +121,7 @@ description: "The blog post is describing how ."
 platformBundledPlugins = com.intellij.modules.json
 ```
 
-<p>Or with the regular `gradle.build.kts` file:</p>
+<p>Or with the regular <code>gradle.build.kts</code> file (with the IntelliJ Platform Gradle Plugin 2.0+):</p>
 
 ```kotlin {title="gradle.build.kts"}
 dependencies {
@@ -139,7 +166,7 @@ class MyJsonSchemaProvider : JsonSchemaFileProvider {
         <code>sushi-config.yaml</code>.
     </li>
     <li><code>getName()</code>: returns the name of the schema, and will be displayed in the IDE.</li>
-    <li><code>getSchemaType()</code>: ?</li>
+    <li><code>getSchemaType()</code>: I actually have no idea about this one, I saw no difference changing the value.</li>
     <li>
         <code>getSchemaVersion()</code> (optional): the JSON Schema version that is implemented. I'm not sure if there's
         any reason to stick with an older version than <code>2020-12</code>, unless you're dealing with legacy schemas.
@@ -162,10 +189,9 @@ import com.jetbrains.jsonSchema.extension.JsonSchemaFileProvider
 import com.jetbrains.jsonSchema.extension.JsonSchemaProviderFactory
 
 class MyJsonSchemaProviderFactory : JsonSchemaProviderFactory {
-    override fun getProviders(project: Project): List<JsonSchemaFileProvider> = listOf(MyJsonSchemaProvider())
+    override fun getProviders(project: Project): List<​JsonSchemaFileProvider> = listOf(MyJsonSchemaProvider())
 }
 ```
-<!-- </JsonSchemaFileProvider> -->
 
 {{< h3 "A registration" >}}
 
@@ -186,6 +212,7 @@ class MyJsonSchemaProviderFactory : JsonSchemaProviderFactory {
     really possible, but I choose the second solution for my plugin – better safe than sorry.
     The first solution is simply implemented by declaring a mandatory dependency on the JSON plugin:
 </p>
+
 ```xml {title="plugin.xml (mandatory dependency)"}
 <!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
 <idea-plugin>
@@ -203,7 +230,7 @@ class MyJsonSchemaProviderFactory : JsonSchemaProviderFactory {
 ```
 
 <p>
-    The second solution is implemented by declaring a optional dependency on the JSON plugin, and creating a second
+    The second solution is implemented by declaring an optional dependency on the JSON plugin, and creating a second
     plugin configuration file that is only loaded when the JSON plugin is available.
     You can name it as you want.
 </p>
@@ -213,21 +240,28 @@ class MyJsonSchemaProviderFactory : JsonSchemaProviderFactory {
     <id>org.jetbrains.plugins.template</id>
     <name>IntelliJ Platform Plugin Template</name>
     <depends>com.intellij.modules.platform</depends>
-    <depends optional="false" config-file="plugin_with_json.xml">com.intellij.modules.json</depends>
+    <depends optional="true" config-file="plugin_with_json.xml">com.intellij.modules.json</depends>
 </idea-plugin>
 ```
 
 ```xml {title="plugin_with_json.xml (optional dependency)"}
 <idea-plugin>
     <extensions defaultExtensionNs="JavaScript.JsonSchema">
-        <ProviderFactory
-                implementation="ch.qligier.jetbrains.plugin.fss.sushiconfig.SushiConfigSchemaProviderFactory"/>
+        <ProviderFactory implementation="org.jetbrains.plugins.template.MyJsonSchemaProviderFactory"/>
     </extensions>
 </idea-plugin>
 ```
 
-{{< h2 "Supported features" >}}
+{{< h2 "The result" >}}
 
 <p>
-    That's it,
+    Here is the result of the implementation in my plugin, when editing a <code>sushi-config.yaml</code> file:
 </p>
+
+{{< figure src="syntax_highlighting.png" alt="The 'sushi-config.yaml' file opened in the IDE" caption="The 'sushi-config.yaml' file opened in the IDE" >}}
+<br>
+{{< figure src="autocompletion.png" alt="Autocompletion suggestions based on the JSON Schema" caption="Autocompletion suggestions based on the JSON Schema" >}}
+<br>
+{{< figure src="error.png" alt="An example of validation error" caption="An example of validation error" >}}
+<br>
+{{< figure src="description.png" alt="The description shown for the element 'dependencies'" caption="The description shown for the element 'dependencies'" >}}
