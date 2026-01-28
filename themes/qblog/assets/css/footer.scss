@@ -1,7 +1,7 @@
 @use 'sass:color';
 @use "variables";
 
-footer {
+body > footer {
     background: variables.$black-primary;
     color: #d2d2d2;
     height: variables.$footer-height;

@@ -9,6 +9,19 @@ copyright = '© 2025 Quentin Ligier'
   copyright = '© 2025 Quentin Ligier'
   [params.author]
     name = 'Quentin Ligier'
+  [params.giscus]
+    repo = "qligier/blog"
+    repoID = "R_kgDOK7GHuA"
+    category = "Articles"
+    categoryID = "DIC_kwDOK7GHuM4C1iXC"
+    mapping = "pathname"
+    strict = "0"
+    reactionsEnabled = "1"
+    emitMetadata = "0"
+    inputPosition = "top"
+    theme = "light"
+    lang = "en"
+    loading = "lazy"
 
 [outputs]
   home = ['html', 'rss']
