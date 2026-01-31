@@ -1,7 +1,8 @@
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="author" content="Quentin Ligier">
-<link rel="canonical" href="{{ .Permalink }}" itemprop="url">
+<meta name="description" content="{{ .Description | default .Site.Params.SiteDescription }}">
+<link rel="canonical" href="{{ .Permalink }}">
 <title>{{ if .IsHome }}{{ site.Title }}{{ else }}{{ printf "%s | %s" .Title site.Title }}{{ end }}</title>
 {{ partialCached "head/css.html" . }}
 <!-- {{ partialCached "head/js.html" . }} -->
