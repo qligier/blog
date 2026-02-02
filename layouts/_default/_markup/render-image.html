@@ -1,13 +1,17 @@
 {{- if .IsBlock -}}
 <figure>
-    <img src="{{ .Destination | safeURL }}"
-         {{- with .Text }} alt="{{ . }}"{{ end -}}
-    >
+    <picture>
+        <img src="{{ .Destination | safeURL }}"
+             {{- with .Text }} alt="{{ . }}"{{ end -}}
+        >
+    </picture>
     <figcaption>{{ .Title | markdownify }}</figcaption>
 </figure>
 {{- else -}}
-<img src="{{ .Destination | safeURL }}"
-     {{- with .Text }} alt="{{ . }}"{{ end -}}
-     {{- with .Title }} title="{{ . }}"{{ end -}}
->
+<picture>
+    <img src="{{ .Destination | safeURL }}"
+         {{- with .Text }} alt="{{ . }}"{{ end -}}
+         {{- with .Title }} title="{{ . }}"{{ end -}}
+    >
+</picture>
 {{- end -}}
