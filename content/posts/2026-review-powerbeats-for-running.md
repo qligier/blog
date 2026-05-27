@@ -64,7 +64,7 @@ worried about that before trying them, because it's what made the NW-WS more sta
 
 I find the active noise cancellation (ANC) to be a deception, as it tends to work badly when running.
 It performs notably worse than the Sony WH-1000XM5 (which I also tried for running), the wind noise is often loud.
-And they don't isolate naturally as much as the NW-WS do, despite no ANC mode for the latter.
+And they don't isolate naturally as much as the NW-WS do, despite no {{< abbr ANC >}} mode for the latter.
 Add to that a low maximum level, and you get a headphone that can never immerse you in the music.
 They have a "transparency mode" that allows you to hear the ambient noise (a nice safety feature for running in the city),
 but considering I never heard much difference between both modes, I'll call that a failure.
