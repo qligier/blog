@@ -3,7 +3,7 @@
 {{ $count_id := print $entry "_count"}}
 
 <!-- range over data file -->
-{{ range $hugo.Data.abbreviations }}
+{{ range hugo.Data.abbreviations }}
 <!-- Find matches -->
 {{ if eq  ( .abbreviation | lower) $entry }}
 <abbr title="{{- .term -}}">{{- .abbreviation -}}</abbr>
