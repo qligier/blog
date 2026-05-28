@@ -2,7 +2,7 @@
 title: "Implement syntax highlighting of a new language in JetBrains IDEs"
 date: 2024-03-18
 draft: false
-tags: ['Development', 'FHIR', 'IDE']
+tags: ['Tutorial', 'Software', 'FHIR', 'JetBrains']
 description: "The blog post is exploring different ways to implement syntax highlighting for a language in JetBrains IDEs."
 ---
 

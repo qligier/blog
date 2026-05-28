@@ -2,7 +2,7 @@
 title: "How to fix metadata of Google Pixels' raw photos"
 date: 2024-01-01
 draft: false
-tags: ['Software', 'Photo']
+tags: ['Software']
 description: "The blog post is about Pixel DNG Fixer, an app that fixes the metadata of DNG photos taken by Google
 Pixel phones."
 ---

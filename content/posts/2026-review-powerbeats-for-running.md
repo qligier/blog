@@ -1,7 +1,7 @@
 ---
 title: "A Review of the Powerbeats Pro 2 for Running"
 date: 2026-05-20
-tags: ['Technology', 'Audio', 'Running']
+tags: ['Opinion', 'Hardware']
 description: "The blog post contains my review of the Powerbeats Pro 2 as running headphones."
 draft: false
 ---

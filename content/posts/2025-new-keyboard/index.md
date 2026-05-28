@@ -2,7 +2,7 @@
 title: "From ANSI to ISO: My NuPhy Field75 keyboard customization journey"
 date: 2025-01-26
 draft: false
-tags: ['keyboard']
+tags: ['Hardware', 'Opinion']
 description: "The blog post is describing how I'm customizing my new NuPhy Field75 keyboard, from the ANSI layout to 
 the ISO Swiss-French layout."
 ---

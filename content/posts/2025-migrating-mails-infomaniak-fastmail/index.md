@@ -2,7 +2,7 @@
 title: "How I migrated my emails from Infomaniak to Fastmail"
 date: 2025-12-28
 draft: false
-tags: ['Email']
+tags: ['Tutorial', 'Software']
 description: "The blog post is describing how I migrated my emails from Infomaniak to Fastmail, alongside the calendar
 and contacts."
 ---

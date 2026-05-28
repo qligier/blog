@@ -1,7 +1,7 @@
 ---
 title: "Waking up a NAS HDD with Jellyfin"
 date: 2026-05-27
-tags: ['Software']
+tags: ['Tutorial', 'Software']
 description: "The blog post describes."
 draft: true
 ---

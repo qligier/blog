@@ -2,7 +2,7 @@
 title: "Improving performance of the IG Publisher: I/O operations"
 date: 2024-01-11
 draft: false
-tags: ['Development', 'FHIR', 'IDE']
+tags: ['Tutorial', 'Software', 'FHIR', 'JetBrains']
 description: "The blog post is about optimizing some I/O operations of the IG Publisher, a tool to build FHIR
 implementation guides."
 ---

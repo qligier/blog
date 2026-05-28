@@ -2,7 +2,7 @@
 title: "Verifying SSH and GPG keys for Forgejo/Gitea with PowerShell 7"
 date: 2026-01-28
 draft: false
-tags: ['git', 'powershell']
+tags: ['Tip', 'Software']
 description: "The blog post is describing how I added and verified my SSH and GPG keys on a Forgejo/Gitea instance, 
 doing the verification steps with PowerShell 7."
 ---

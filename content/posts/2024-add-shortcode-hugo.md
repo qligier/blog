@@ -2,7 +2,7 @@
 title: "How to implement highlighted inline code blocks in Hugo"
 date: 2024-09-05
 draft: false
-tags: ['Development', 'Hugo']
+tags: ['Tutorial', 'Software']
 description: "The blog post describes how I implemented the syntax used by InlineHilite for highlighted inline code 
 blocks in Hugo."
 ---

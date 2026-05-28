@@ -1,7 +1,7 @@
 ---
 title: "Beginner's guide to Apache Camel and IPF for the Swiss EPR"
 date: 2024-09-29
-tags: ['Development', 'IPF', 'Camel', 'Java', 'Swiss EPR']
+tags: ['Tutorial', 'Software', 'Java', 'Switzerland']
 description: "The blog post is describing how to start working with IPF and Apache Camel to send your first request 
 to the Swiss EPR."
 ---

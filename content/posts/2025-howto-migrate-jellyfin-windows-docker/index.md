@@ -2,7 +2,7 @@
 title: "How to migrate Jellyfin from Windows to Docker"
 date: 2024-12-07
 draft: true
-tags: ['Development', 'IPF', 'Camel', 'Java', 'Swiss EPR']
+tags: ['Tutorial', 'Software']
 description: "The blog post is describing ."
 ---
 
