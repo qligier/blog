@@ -1,9 +1,9 @@
 ---
 title: "Waking up a NAS HDD with Jellyfin"
-date: 2026-05-27
+date: 2026-05-29
 tags: ['Tutorial', 'Software']
-description: "The blog post describes."
-draft: true
+description: "The blog post describes how to trigger HDD wakeup on a NAS when opening Jellyfin."
+draft: false
 ---
 
 I have at home a {{< abbr NAS >}} that I use as backup for important documents and as primary storage for my medias.
@@ -54,23 +54,25 @@ We'll add a second service for the web server running the PHP script, and link t
 ```yaml
 services:
   jellyfin:
-    # Previous configuration omitted for brevity
+    # Previous configuration omitted for brevity. We only add this 'networks' section to the 'jellyfin' service.
     networks:
       - public
       - private
 
+  # We create a new service to run an HTTP server with PHP support.
   webhook:
     image: erseco/alpine-php-webserver:3.23.4
-    user: 65534:65534
+    user: 65534:65534 # Run as 'nobody' user
     container_name: webhook-server
     tty: true
     restart: always
     volumes:
-      - /volume1/docker/webhook-server:/var/www/html:rw
+      - /volume1/docker/webhook-server:/var/www/html:ro
       - /volume2/Medias:/var/www/trigger:ro
     networks:
      - private
 
+# We define the two networks used by the services.
 networks:
   private:
     internal: true
@@ -102,11 +104,22 @@ clearstatcache(true, $directory);
 stat($directory);
 ```
 
-It simply stats the directory on the {{< abbr HDD >}}s, and clears the stat cache (that's a PHP thing) to make sure it
-hits the filesystem.
+It simply stats the directory on the {{< abbr HDD >}}s, and clears the stat cache to make sure it hits the filesystem.
 We don't need more (although you could parse the notification payload and implement more complex logic).
 
-Finally, on Jellyfin, I installed the webhook plugin (which is official).
-I selected the events 'Session start' and 'Authentication successful' to trigger the webhook.
+Finally, on Jellyfin, I installed the webhook plugin (which is official): in _Administration_ → _Dashboard_ → 
+_Plugins_, select the _Available_ ones, select _Webhook_ and click _Install_.
+You need to restart the server after that (on the home _Dashboard_ page, click the _Restart_ button).
+Go back to the _Plugins_ page, select the _Installed_ ones, select _Webhook_ again and click on _Settings_.
+In the plugin configuration, I added a new webhook with the following settings:
 
-If you want to go further, you can provide a payload by either filling the 'template' textarea (), or enable the '' checkbox.
+- __Webhook name:__ whatever display name you want
+- __Webhook Url:__ http://webhook:8080
+- __Status:__ Enabled
+- __Notification Type:__ _Authentication Success_ and _Session Start_
+
+Then click on _Save_ at the bottom of the page.
+That's it!
+Now, when you open a Jellyfin session (e.g. by opening the web interface or any application), the webhook will be 
+triggered, the PHP script triggered by that HTTP request will stat the directory on the {{< abbr HDD >}}s, and by 
+the time you choose a media to play, the drives should be running.
