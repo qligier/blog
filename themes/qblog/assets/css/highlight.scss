@@ -1,7 +1,7 @@
 @use "variables";
 
-$blue1: #0099b6;
-$green1: #71aa00;
+$blue1: #008199;
+$green1: #75a700;
 $black1: #333;
 
 /* Background */ .bg { color: #272822; background-color: #fafafa; }
@@ -44,7 +44,7 @@ $black1: #333;
 /* NameVariableGlobal */ .chroma .vg { color: $black1 }
 /* NameVariableInstance */ .chroma .vi { color: $black1 }
 /* NameVariableMagic */ .chroma .vm { color: $black1 }
-/* Literal */ .chroma .l { color: #ae81ff }
+/* Literal */ .chroma .l { color: #8648f5 }
 /* LiteralDate */ .chroma .ld { color: #d88200 }
 /* LiteralString */ .chroma .s { color: #d88200 }
 /* LiteralStringAffix */ .chroma .sa { color: #d88200 }

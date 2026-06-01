@@ -15,6 +15,7 @@ body {
     margin: 0;
     padding: 0;
 }
+
 body {
     color: variables.$black-primary;
     font-family: variables.$font-family-sans-serif;
@@ -22,6 +23,7 @@ body {
     line-height: 1.5;
     background: variables.$white1;
 }
+
 main {
     min-height: calc(100vh - #{variables.$header-height + variables.$footer-height});
     margin: 0 auto;
@@ -31,6 +33,7 @@ main {
 
     a {
         color: variables.$red-primary;
+
         &:visited {
             color: variables.$red-primary;
         }
@@ -57,6 +60,7 @@ main {
             margin-left: 5px;
             transition: color 0.15s ease-in-out;
         }
+
         &:hover {
             a,
             a:visited {
@@ -65,6 +69,7 @@ main {
         }
     }
 }
+
 #body {
     min-height: calc(100vh - #{variables.$header-height + variables.$footer-height});
     width: 100%;
@@ -78,6 +83,7 @@ main {
         margin-top: 0;
     }
 }
+
 ul.posts {
     padding-left: 0;
 
@@ -85,6 +91,7 @@ ul.posts {
         list-style-type: none;
         margin-bottom: 5px;
     }
+
     time {
         display: inline-block;
         width: 180px;
@@ -92,11 +99,13 @@ ul.posts {
         font-size: 0.85em;
         margin-right: 15px;
     }
+
     div {
         display: inline-block;
         width: calc(100% - 200px);
         vertical-align: top;
     }
+
     p {
         margin-top: 0;
         font-size: 13px;
@@ -124,6 +133,7 @@ ul.posts {
         &:visited {
             color: variables.$blue-primary;
         }
+
         &:hover {
             background-color: variables.$blue-primary;
             color: #fff;
@@ -135,6 +145,7 @@ ul.posts {
             }
         }
     }
+
     svg {
         vertical-align: middle;
         fill: variables.$blue-primary;
@@ -146,13 +157,21 @@ kbd {
     background-color: #eee;
     border-radius: 3px;
     border: 1px solid #b4b4b4;
-    box-shadow:
-        0 1px 1px rgba(0, 0, 0, 0.2),
-        0 2px 0 0 rgba(255, 255, 255, 0.7) inset;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.2),
+    0 2px 0 0 rgba(255, 255, 255, 0.7) inset;
     color: #333;
     display: inline-block;
     font-size: 12px;
     font-weight: 700;
     padding: 1px 4px;
     white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    html {
+        scroll-behavior: smooth;
+    }
+    @view-transition {
+        navigation: auto;
+    }
 }
