@@ -1,34 +1,31 @@
 {{ define "main" }}
 <div id="body">
     {{ if eq .Title "Tags" }}
-    {{ $types := slice "Tutorial" "Opinion" "Tip" }}
+    {{ $featured := slice "tutorial" "opinion" "tip" }}
 
-    <section>
-        <h2>Types of posts</h2>
-        <ul>
-            {{ range .Pages }}
-            {{ if in $types .LinkTitle }}
-            <li>
-                <a href="{{ .RelPermalink }}">{{ .LinkTitle }}</a>
-            </li>
-            {{ end }}
-            {{ end }}
-        </ul>
-    </section>
-
-    <section>
-        <h2>Subjects</h2>
-        <ul>
-            {{ range .Pages }}
-            {{ if not (in $types .LinkTitle) }}
-            <li>
-                <a href="{{ .RelPermalink }}">{{ .LinkTitle }}</a>
-            </li>
-            {{ end }}
-            {{ end }}
-        </ul>
-    </section>
-
+    <h2>Types of posts</h2>
+    <ul>
+        {{ range .Data.Terms.Alphabetical }}
+        {{ if in $featured .Term }}
+        <li>
+            <a href="{{ .Page.RelPermalink }}">{{ .Page.LinkTitle }}</a>
+            ({{ .Count }})
+        </li>
+        {{ end }}
+        {{ end }}
+    </ul>
+    <br>
+    <h2>Subjects</h2>
+    <ul>
+        {{ range .Data.Terms.Alphabetical }}
+        {{ if not (in $featured .Term) }}
+        <li>
+            <a href="{{ .Page.RelPermalink }}">{{ .Page.LinkTitle }}</a>
+            ({{ .Count }})
+        </li>
+        {{ end }}
+        {{ end }}
+    </ul>
     {{ else }}
     <h2>{{ .Title }}</h2>
     {{ .Content }}
