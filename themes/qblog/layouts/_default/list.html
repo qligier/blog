@@ -1,17 +1,37 @@
 {{ define "main" }}
 <div id="body">
+    {{ if eq .Title "Tags" }}
+    {{ $types := slice "Tutorial" "Opinion" "Tip" }}
+
+    <section>
+        <h2>Types of posts</h2>
+        <ul>
+            {{ range .Pages }}
+            {{ if in $types .LinkTitle }}
+            <li>
+                <a href="{{ .RelPermalink }}">{{ .LinkTitle }}</a>
+            </li>
+            {{ end }}
+            {{ end }}
+        </ul>
+    </section>
+
+    <section>
+        <h2>Subjects</h2>
+        <ul>
+            {{ range .Pages }}
+            {{ if not (in $types .LinkTitle) }}
+            <li>
+                <a href="{{ .RelPermalink }}">{{ .LinkTitle }}</a>
+            </li>
+            {{ end }}
+            {{ end }}
+        </ul>
+    </section>
+
+    {{ else }}
     <h2>{{ .Title }}</h2>
     {{ .Content }}
-
-    {{ if eq .Title "Tags" }}
-    <ul>
-        {{ range .Pages }}
-        <li>
-            <a href="{{ .RelPermalink }}">{{ .LinkTitle }}</a>
-        </li>
-        {{ end }}
-    </ul>
-    {{ else }}
     <ul class="posts">
         {{ range .Pages }}
         <li>
