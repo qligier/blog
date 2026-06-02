@@ -19,6 +19,8 @@ They're unfortunately not produced anymore, so it was sadly time to switch to so
 In this review, I'll logically often compare them to the Sony NW-WS lineup, and occasionally to other headphones I've
 used (for sport or not).
 
+![Both headphones side-by-side](photo.jpg "Details of both headphones side-by-side).")
+
 The Bluetooth connection is very stable, I haven't had any disconnections or dropouts since the beginning, which is
 infinitely better than the Jaybird X3, which were quite sensitive to the phone's position.
 The connection is also very "aggressive", in the sense that it will connect to the phone without any user action.
