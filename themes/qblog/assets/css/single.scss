@@ -49,6 +49,11 @@
         table {
             width: 100%;
             margin: 10px 0;
+
+            // Shrink the 'line numbers' column to its content, the 'code' column takes the rest
+            td.lntd:first-child {
+                width: 1px;
+            }
         }
 
         .lnt {
